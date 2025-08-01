@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date and Weather & Events (E-Ink)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            font-family: "Inter", sans-serif;
+            overflow: hidden;
+            height:560px
+        }
+
+        .fixed-size-container {
+            width: 800px;
+            height: 480px;
+        }
+        .section-divider:not(:last-child) {
+            border-bottom: 1px solid black;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-blue-400">
+
+    <div class="fixed-size-container bg-white grid grid-cols-2 grid-rows-[auto_1fr] border border-black">
+
+        <div class="col-span-2 px-4 pt-4">
+             <h1 class="text-2xl font-bold text-left text-black mb-4">
+                Monday, May 5
+            </h1>
+        </div>
+
+        <div class="flex flex-col px-4 gap-4">
+            <div class="flex-1 bg-[#3A5B46] rounded-lg flex flex-row justify-between items-center p-3">
+                <div class="flex flex-col items-start">
+                    <img src="https://placehold.co/100x100/FFFFFF/000000?text=SUN" alt="Morning Weather Icon" class="rounded-md">
+                </div>
+                <div class="flex flex-col items-center flex-grow text-white">
+                    <h2 class="text-lg font-semibold mb-1">Morning</h2>
+                    <p class="text-xl font-bold">75°F</p>
+                    <p class="text-sm">Sunny</p>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-[#9C484B] rounded-lg flex flex-row justify-between items-center p-3">
+                 <div class="flex flex-col items-start">
+                    <img src="https://placehold.co/100x100/FFFFFF/000000?text=CLOUD" alt="Evening Weather Icon" class="rounded-md">
+                </div>
+                <div class="flex flex-col items-center justify-center flex-grow text-white">
+                    <h2 class="text-lg font-semibold mb-1">Evening</h2>
+                    <p class="text-xl font-bold">60°F</p>
+                    <p class="text-sm">Cloudy</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col px-4 gap-4">
+            <div class="section-divider">
+                <h3 class="text-lg font-semibold text-black mb-2">Today</h3>
+                 <div class="p-2 bg-white rounded-lg">
+                    <ul class="list-disc list-inside text-black text-sm">
+                        <li class="mb-1">Team Meeting - 10:00 AM</li>
+                        <li>Doctor Appointment - 2:30 PM</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-divider">
+                <h3 class="text-lg font-semibold text-black mb-2">Tomorrow</h3>
+                 <div class="p-2 bg-white rounded-lg">
+                    <ul class="list-disc list-inside text-black text-sm">
+                        <li class="mb-1">Grocry Shopping</li>
+                        <li>Dinner with Sarah - 7:00 PM</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div> 
+                <h3 class="text-lg font-semibold text-black mb-2">Soon</h3>
+                 <div class="p-2 bg-white rounded-lg">
+                    <ul class="list-disc list-inside text-black text-sm">
+                        <li class="mb-1">Project Deadline - May 8</li>
+                        <li>Dentist Appointment - May 10</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -5,3 +5,4 @@ __pycache__
 .env
 *.jpg
 *.png
+data_package.json

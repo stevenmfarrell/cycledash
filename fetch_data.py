@@ -5,6 +5,7 @@ from settings import settings
 from models import DataPackage
 import pprint
 from genai_api import get_genai_weather_summary
+import json
 def main():
     calendar_service = get_calendar_api_service()
     today = datetime.combine(date.today(), time())
@@ -38,8 +39,11 @@ def main():
         morning_weather=weathers[0],
         afternoon_weather=weathers[1],
         morning_weather_assessment=summaries[0],
-        afternoon_weather_assessment=sumaries[1]
+        afternoon_weather_assessment=summaries[1]
     )
+    with open("data_package.json", "w") as f:
+        f.write(data_package.model_dump_json(indent=2))
+        print("Data package saved to data_package.json")
 
 
 if __name__ == "__main__":

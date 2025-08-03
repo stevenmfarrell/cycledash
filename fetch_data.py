@@ -5,7 +5,6 @@ from settings import settings
 from models import DataPackage
 import pprint
 from genai_api import get_genai_weather_summary
-import json
 def main():
     calendar_service = get_calendar_api_service()
     today = datetime.combine(date.today(), time())

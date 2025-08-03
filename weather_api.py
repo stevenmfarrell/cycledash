@@ -5,37 +5,7 @@ import pytz
 import datetime
 from typing import List
 from settings import settings
-wmo_weather_codes = {
-    0: "Clear sky",
-    1: "Mainly clear",
-    2: "Partly cloudy",
-    3: "Overcast",
-    45: "Fog",
-    48: "Depositing rime fog",
-    51: "Light drizzle",
-    53: "Moderate drizzle",
-    55: "Dense drizzle",
-    56: "Light freezing drizzle",
-    57: "Dense freezing drizzle",
-    61: "Slight rain",
-    63: "Moderate rain",
-    65: "Heavy rain",
-    66: "Light freezing rain",
-    67: "Heavy freezing rain",
-    71: "Slight snow fall",
-    73: "Moderate snow fall",
-    75: "Heavy snow fall",
-    77: "Snow grains",
-    80: "Slight rain showers",
-    81: "Moderate rain showers",
-    82: "Violent rain showers",
-    85: "Slight snow showers",
-    86: "Heavy snow showers",
-    95: "Thunderstorm",
-    96: "Thunderstorm: Heavy",
-    99: "Thunderstorm with hail",
-}
-
+from wmo_codes import get_wmo_weather_description
 def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
     tz = pytz.timezone(tz_str)
 
@@ -62,11 +32,12 @@ def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
         weather = CycleWeather(
             time=datetime.datetime.fromtimestamp(raw_weather['hourly']['time'][i], tz=tz),
             feels_like_temperature_f=raw_weather['hourly']['apparent_temperature'][i],
-            temperature_f=raw_weather['hourly']['temperature'][i],  # Assuming apparent temperature is used as the temperature
-            text = wmo_weather_codes.get(raw_weather['hourly']['weather_code'][i], None),
+            temperature_f=raw_weather['hourly']['temperature'][i],
+            text = get_wmo_weather_description(raw_weather['hourly']['weather_code'][i], False),
             wind_gust_mph=raw_weather['hourly']['wind_gusts_10m'][i],
             wind_speed_mph=raw_weather['hourly']['wind_speed_10m'][i],
             uv_index=raw_weather['hourly']['uv_index'][i],
+            wmo_weather_code=raw_weather['hourly']['weather_code'][i],
             precipitation_pct=raw_weather['hourly']['precipitation_probability'][i],
             wind_direction_deg=raw_weather['hourly']['wind_direction_10m'][i],
         )

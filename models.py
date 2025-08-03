@@ -18,6 +18,7 @@ class CycleWeather(BaseModel):
     wind_gust_mph: Optional[float] = None
     wind_speed_mph: Optional[float] = None
     #air_quality: Optional[float]= None
+    wmo_weather_code: Optional[int] = None
     wind_direction_deg: Optional[float] = None
 
 class CycleAssessment(BaseModel):

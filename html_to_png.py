@@ -13,7 +13,7 @@ app = typer.Typer(
 # --- Configuration Constants ---
 TEMP_SCREENSHOT_NAME = "temp_screenshot.png"
 CAPTURE_WIDTH = 480
-CAPTURE_HEIGHT = 100  # Larger height to capture everything plus the blue bar
+CAPTURE_HEIGHT = 1000  # Larger height to capture everything plus the blue bar
 FINAL_WIDTH = 480
 FINAL_HEIGHT = 800
 

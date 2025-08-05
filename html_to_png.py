@@ -11,10 +11,10 @@ app = typer.Typer(
 
 # --- Configuration Constants ---
 TEMP_SCREENSHOT_NAME = "temp_screenshot.png"
-CAPTURE_WIDTH = 800
-CAPTURE_HEIGHT = 600  # Larger height to capture everything plus the blue bar
-FINAL_WIDTH = 800
-FINAL_HEIGHT = 480
+CAPTURE_WIDTH = 480
+CAPTURE_HEIGHT = 100  # Larger height to capture everything plus the blue bar
+FINAL_WIDTH = 480
+FINAL_HEIGHT = 800
 
 # --- Main Script Logic as a CLI Command ---
 
@@ -69,6 +69,7 @@ def run(
             crop_box = (0, 0, FINAL_WIDTH, FINAL_HEIGHT)
             
             cropped_img = img.crop(crop_box)
+            cropped_img = cropped_img.transpose(90)
             cropped_img.save(output_file)
             print(f"Successfully cropped image and saved as: {output_file}")
 

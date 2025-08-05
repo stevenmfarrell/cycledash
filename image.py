@@ -25,7 +25,6 @@ if not args.file:
     sys.exit(1)
 
 image = Image.open(args.file)
-image = image.transpose(90)
 resizedimage = image.resize(inky.resolution)
 
 try:

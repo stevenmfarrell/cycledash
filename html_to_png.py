@@ -1,5 +1,6 @@
 import subprocess
 from PIL import Image
+
 import os
 import typer
 from typing_extensions import Annotated
@@ -69,7 +70,7 @@ def run(
             crop_box = (0, 0, FINAL_WIDTH, FINAL_HEIGHT)
             
             cropped_img = img.crop(crop_box)
-            cropped_img = cropped_img.transpose(90)
+            cropped_img = cropped_img.transpose(Image.Transpose.ROTATE_90)
             cropped_img.save(output_file)
             print(f"Successfully cropped image and saved as: {output_file}")
 

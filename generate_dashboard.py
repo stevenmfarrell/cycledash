@@ -68,7 +68,7 @@ if len(today_events) + len(tomorrow_events) + len(future_events) > 6:
 
 # Render the template with the data package
 rendered_html = template.render(
-    date_title=data_package.morning_weather.time.strftime("%A, %B %d"),
+    date_title=data_package.morning_weather.time.strftime("%A, %b %-d"),
     morning_image_url=get_wmo_weather_image(data_package.morning_weather.wmo_weather_code,True),
     afternoon_image_url=get_wmo_weather_image(data_package.afternoon_weather.wmo_weather_code, True),
     morning_temperature=int(pick_display_temperature(data_package.morning_weather)),

@@ -14,7 +14,7 @@
         }
         body {
             margin: 0;
-            font-family: "Inter", sans-serif;
+            font-family: "Tahoma", sans-serif;
             overflow: hidden;
             height:560px
         }
@@ -27,14 +27,18 @@
             border-bottom: 1px solid black;
             padding-bottom: 0.5rem;
         }
-        .green-bg {
+        .good-bg {
             background-color: #3A5B46;
         }
-        .red-bg {
+        .bad-bg {
             background-color: #9C484B;
         }
-        .yellow-bg {
+        .maybe-bg {
             background-color: #D0BE47;
+        }
+        .weather-icon {
+            width: 150px;
+            height: 150px;
         }
     </style>
 </head>
@@ -43,32 +47,33 @@
     <div class="fixed-size-container bg-white grid grid-cols-2 grid-rows-[auto_1fr]">
 
         <div class="col-span-2 px-4 pt-4">
-             <h1 class="text-2xl font-bold text-left text-black mb-4">
-                Monday, May 5
+             <h1 class="text-5xl text-left text-black mb-4">
+                Sunday, Aug 3
             </h1>
         </div>
 
         <div class="flex flex-col px-4 gap-4">
-            <div class="flex-1 green-bg rounded-lg flex flex-row justify-between items-center p-3">
+            <div class="flex-1 relative good-bg rounded-lg flex flex-row justify-between items-center p-3">
                 <div class="flex flex-col items-start">
-                    <img src="https://placehold.co/100x100/FFFFFF/000000?text=SUN" alt="Morning Weather Icon" class="rounded-md">
+                    <img src="http://openweathermap.org/img/wn/01d@2x.png" alt="Morning Weather Icon" class="rounded-md weather-icon">
                 </div>
                 <div class="flex flex-col items-center flex-grow text-white">
-                    <h2 class="text-lg font-semibold mb-1">Morning</h2>
-                    <p class="text-xl font-bold">75°F</p>
-                    <p class="text-sm">Sunny</p>
+                    <p class="text-6xl">68°</p>
+                    <p class="text-lg">Clear skies and light wind</p>
                 </div>
+                <h2 class="absolute bottom-2 right-2 text-base text-white">8 AM</h2>
             </div>
 
-            <div class="flex-1 yellow-bg rounded-lg flex flex-row justify-between items-center p-3">
+            <div class="flex-1 relative good-bg rounded-lg flex flex-row justify-between items-center p-3">
                  <div class="flex flex-col items-start">
-                    <img src="https://placehold.co/100x100/FFFFFF/000000?text=CLOUD" alt="Evening Weather Icon" class="rounded-md">
+                    <img src="http://openweathermap.org/img/wn/01d@2x.png" alt="Evening Weather Icon" class="rounded-md weather-icon">
                 </div>
                 <div class="flex flex-col items-center justify-center flex-grow text-white">
-                    <h2 class="text-lg font-semibold mb-1">Evening</h2>
-                    <p class="text-xl font-bold">60°F</p>
-                    <p class="text-sm">Cloudy</p>
+                    <p class="text-6xl">93°</p>
+                    <p class="text-lg">Clear, warm, low wind</p>
                 </div>
+                <h2 class="absolute bottom-2 right-2 text-base text-white">5 PM</h2>
+
             </div>
         </div>
 
@@ -76,9 +81,11 @@
             <div class="section-divider">
                 <h3 class="text-lg font-semibold text-black mb-2">Today</h3>
                  <div class="p-2 bg-white rounded-lg">
+                    
                     <ul class="list-disc list-inside text-black text-base">
-                        <li class="mb-1">Team Meeting - 10:00 AM</li>
-                        <li>Doctor Appointment - 2:30 PM</li>
+                        
+                            <li>Rigby</li>
+                        
                     </ul>
                 </div>
             </div>
@@ -86,21 +93,17 @@
             <div class="section-divider">
                 <h3 class="text-lg font-semibold text-black mb-2">Tomorrow</h3>
                  <div class="p-2 bg-white rounded-lg">
+                    
                     <ul class="list-disc list-inside text-black text-base">
-                        <li class="mb-1">Grocry Shopping</li>
-                        <li>Dinner with Sarah - 7:00 PM</li>
+                        
+                            <li>Rigby</li>
+                        
                     </ul>
                 </div>
             </div>
 
             <div> 
-                <h3 class="text-lg font-semibold text-black mb-2">Soon</h3>
-                 <div class="p-2 bg-white rounded-lg">
-                    <ul class="list-disc list-inside text-black text-base">
-                        <li class="mb-1">Project Deadline - May 8</li>
-                        <li>Dentist Appointment - May 10</li>
-                    </ul>
-                </div>
+                
             </div>
         </div>
     </div>

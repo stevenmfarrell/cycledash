@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cycle Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         html {
             box-sizing: border-box;
@@ -14,21 +17,16 @@
         }
         body {
             margin: 0;
-            font-family: "Tahoma", sans-serif;
-            overflow: hidden;
-            height:560px
+            font-family: "Inter", sans-serif;
+            background-color: #c4d6ff;
         }
 
-        .fixed-size-container {
-            width: 800px;
-            height: 480px;
-        }
-        .section-divider:not(:last-child) {
-            border-bottom: 1px solid black;
-            padding-bottom: 0.5rem;
+        .tall-container {
+            width: 480px;
+            height: 800px;
         }
         .good-bg {
-            background-color: #3A5B46;
+            background-color: #1dad23;
         }
         .bad-bg {
             background-color: #9C484B;
@@ -37,74 +35,91 @@
             background-color: #D0BE47;
         }
         .weather-icon {
-            width: 150px;
-            height: 150px;
+            width: 80px;
+            height: 80px;
         }
     </style>
 </head>
-<body class="bg-blue-100">
+<body class="flex min-h-screen">
 
-    <div class="fixed-size-container bg-white grid grid-cols-2 grid-rows-[auto_1fr]">
-
-        <div class="col-span-2 px-4 pt-4">
-             <h1 class="text-5xl text-left text-black mb-4">
+    <div class="tall-container flex flex-col good-bg">
+        <div class="flex flex-col p-6 gap-6 good-bg">
+        <div>
+             <h1 class="text-5xl font-semibold text-left text-white">
                 Sunday, Aug 3
             </h1>
         </div>
-
-        <div class="flex flex-col px-4 gap-4">
-            <div class="flex-1 relative good-bg rounded-lg flex flex-row justify-between items-center p-3">
-                <div class="flex flex-col items-start">
-                    <img src="http://openweathermap.org/img/wn/01d@2x.png" alt="Morning Weather Icon" class="rounded-md weather-icon">
+        <div class="flex flex-row gap-4">
+            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-center items-center p-4 text-black shadow-md h-48">
+                <div class="flex flex-col items-center">
+                    <div class="flex flex-row items-center justify-center gap-2">
+                        <div class="flex-shrink-0">
+                            <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Morning Weather Icon" class="rounded-md weather-icon" onerror="this.onerror=null;this.src='https://placehold.co/80x80/FFFFFF/333333?text=Icon';">
+                        </div>
+                        <div>
+                            <p class="text-4xl font-semibold">68°</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xl text-center">Clear skies & light wind</p>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center flex-grow text-white">
-                    <p class="text-6xl">68°</p>
-                    <p class="text-lg">Clear skies and light wind</p>
-                </div>
-                <h2 class="absolute bottom-2 right-2 text-base text-white">8 AM</h2>
+                <h2 class="absolute bottom-3 right-4 text-sm font-semibold text-gray-500">8 AM</h2>
             </div>
 
-            <div class="flex-1 relative good-bg rounded-lg flex flex-row justify-between items-center p-3">
-                 <div class="flex flex-col items-start">
-                    <img src="http://openweathermap.org/img/wn/01d@2x.png" alt="Evening Weather Icon" class="rounded-md weather-icon">
+            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-center items-center p-4 text-black shadow-md h-48">
+                <div class="flex flex-col items-center">
+                    <div class="flex flex-row items-center justify-center gap-2">
+                        <div class="flex-shrink-0">
+                            <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Evening Weather Icon" class="rounded-md weather-icon" onerror="this.onerror=null;this.src='https://placehold.co/80x80/FFFFFF/333333?text=Icon';">
+                        </div>
+                        <div>
+                            <p class="text-4xl font-semibold">93°</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xl text-center">Clear, warm, low wind</p>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center justify-center flex-grow text-white">
-                    <p class="text-6xl">93°</p>
-                    <p class="text-lg">Clear, warm, low wind</p>
-                </div>
-                <h2 class="absolute bottom-2 right-2 text-base text-white">5 PM</h2>
-
+                <h2 class="absolute bottom-3 right-4 text-sm font-semibold text-gray-500">5 PM</h2>
             </div>
         </div>
 
-        <div class="flex flex-col px-4 gap-4">
-            <div class="section-divider">
-                <h3 class="text-lg font-semibold text-black mb-2">Today</h3>
-                 <div class="p-2 bg-white rounded-lg">
-                    
-                    <ul class="list-disc list-inside text-black text-base">
-                        
-                            <li>Rigby</li>
-                        
+        <div class="flex flex-col flex-grow justify-between gap-4">
+            <div>
+                <div class="p-4 bg-white rounded-lg shadow-md">
+                    <ul class="text-black text-3xl space-y-2">
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">All Day</span>
+                            <span class="w-3/5 text-left">Rigby</span>
+                        </li>
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">10 AM</span>
+                            <span class="w-3/5 text-left">Dentist</span>
+                        </li>
+                    </ul>
+                    <hr class="border-gray-800 my-4">
+                    <ul class="text-black text-xl space-y-2">
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">Tomorrow</span>
+                            <span class="w-3/5 text-left">Rigby</span>
+                        </li>
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">Tomorrow</span>
+                            <span class="w-3/5 text-left">Game Night - 7 PM</span>
+                        </li>
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">Aug 8</span>
+                            <span class="w-3/5 text-left">Star Wars</span>
+                        </li>
+                         <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">Sep 1</span>
+                            <span class="w-3/5 text-left">Joey's Birthday</span>
+                        </li>
                     </ul>
                 </div>
             </div>
-
-            <div class="section-divider">
-                <h3 class="text-lg font-semibold text-black mb-2">Tomorrow</h3>
-                 <div class="p-2 bg-white rounded-lg">
-                    
-                    <ul class="list-disc list-inside text-black text-base">
-                        
-                            <li>Rigby</li>
-                        
-                    </ul>
-                </div>
-            </div>
-
-            <div> 
-                
-            </div>
+        </div>
         </div>
     </div>
 </body>

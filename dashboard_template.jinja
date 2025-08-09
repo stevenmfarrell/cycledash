@@ -9,6 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+        --weather-icon-cloud-front-color: #f9f9f9;
+        --weather-icon-cloud-back-color: #7a7a7a;
+        --weather-icon-sun-color: #ffa200;
+        --weather-icon-moon-color: #ffea00;
+        --weather-icon-rain-color: #1e1eae;
+        --weather-icon-snow-color: #f9f9f9;
+        --weather-icon-snow-stroke-color: #7a7a7a;
+
+        }
         html {
             box-sizing: border-box;
         }
@@ -61,8 +71,8 @@
             <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-around items-center p-4 text-black shadow-md h-64">
                 <div class="flex flex-col items-center">
                     <div class="flex flex-row items-center justify-center gap-2">
-                        <div class="flex-shrink-0">
-                            <img src="{{forecast.image_url}}" alt="Weather Icon" class="rounded-md weather-icon" onerror="this.onerror=null;this.src='https://placehold.co/80x80/FFFFFF/333333?text=Icon';">
+                        <div class="flex-shrink-0 w-16 h-16">
+                            {{ forecast.svg | safe }}
                         </div>
                         <div>
                             <p class="text-5xl font-semibold">{{forecast.temperature}}°</p>

@@ -95,6 +95,14 @@ def combine_conditions(c1: CycleConditions, c2: CycleConditions) -> CycleConditi
         return "maybe"
     return "good"
 
+def get_forecast_svg(weather: CycleWeather) -> str:
+    """
+    Better to inline the svg so we can apply syles
+    """
+    image_path = get_wmo_weather_image(weather.wmo_weather_code, True)
+    with open(image_path, "r") as f:
+        svg_content = f.read()
+    return svg_content
 
 with open(data_package_file, "r") as f:
     data_package = DataPackage.model_validate_json(f.read())
@@ -118,7 +126,6 @@ other_event_tuples = other_event_tuples[: 10 - int(1.5 * len(today_event_tuples)
 
 def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment):
     forecast = {
-        "image_url": get_wmo_weather_image(weather.wmo_weather_code, True),
         "temperature": round(pick_display_temperature(weather)),
         "summary": assessment.summary,
         "conditions": assessment.conditions,
@@ -126,6 +133,7 @@ def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment
         "wind_rotation": get_wind_rotation(weather.wind_direction_deg),
         "precip": f"{round(weather.precipitation_probability * 100)}%",
         "time": format_time_ampm(weather.time),
+        "svg": get_forecast_svg(weather),
     }
     return forecast
 

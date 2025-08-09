@@ -1,4 +1,4 @@
-from models import CycleConditions, DataPackage, CycleWeather, CalendarEvent
+from models import CycleAssessment, CycleConditions, DataPackage, CycleWeather, CalendarEvent
 import jinja2
 from wmo_codes import get_wmo_weather_image
 from datetime import datetime, time
@@ -108,36 +108,32 @@ other_event_tuples = [get_tomorrow_event_tuple(event) for event in tomorrow_even
     get_future_event_tuple(event) for event in future_events
 ]
 other_event_tuples = other_event_tuples[: 10 - int(1.5 * len(today_event_tuples))]
+
+def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment):
+    forecast = {
+        "image_url": get_wmo_weather_image(weather.wmo_weather_code, True),
+        "temperature": round(pick_display_temperature(weather)),
+        "summary": assessment.summary,
+        "conditions": assessment.conditions,
+        "wind": get_wind_text(weather),
+        "wind_rotation": get_wind_rotation(weather.wind_direction_deg),
+        "precip": f"{weather.precipitation_pct}%",
+        "time": format_time_ampm(weather.time),
+    }
+    return forecast
+
+display_forecasts = [get_display_forecast_data(data_package.morning_weather, data_package.morning_weather_assessment),
+                     get_display_forecast_data(data_package.afternoon_weather, data_package.afternoon_weather_assessment)]
+
 rendered_html = template.render(
     date_title=data_package.morning_weather.time.strftime("%A, %b %-d"),
-    morning_image_url=get_wmo_weather_image(
-        data_package.morning_weather.wmo_weather_code, True
-    ),
-    afternoon_image_url=get_wmo_weather_image(
-        data_package.afternoon_weather.wmo_weather_code, True
-    ),
-    morning_temperature=int(pick_display_temperature(data_package.morning_weather)),
-    afternoon_temperature=int(pick_display_temperature(data_package.afternoon_weather)),
-    morning_forecast=data_package.morning_weather.text,
-    afternoon_forecast=data_package.afternoon_weather.text,
-    morning_wind=get_wind_text(data_package.morning_weather),
-    afternoon_wind=get_wind_text(data_package.afternoon_weather),
-    morning_wind_rotation=get_wind_rotation(data_package.morning_weather.wind_direction_deg),
-    afternoon_wind_rotation=get_wind_rotation(data_package.afternoon_weather.wind_direction_deg),
-    morning_precip=f"{data_package.morning_weather.precipitation_pct}%",
-    afternoon_precip=f"{data_package.afternoon_weather.precipitation_pct}%",
     today_events=today_event_tuples,
     future_events=other_event_tuples,
-    morning_time=format_time_ampm(data_package.morning_weather.time),
-    afternoon_time=format_time_ampm(data_package.afternoon_weather.time),
-    morning_conditions=data_package.morning_weather_assessment.conditions,
-    afternoon_conditions=data_package.afternoon_weather_assessment.conditions,
+    forecasts = display_forecasts,
     overall_conditions=combine_conditions(
         data_package.morning_weather_assessment.conditions,
         data_package.afternoon_weather_assessment.conditions,
     ),
-    morning_summary=data_package.morning_weather_assessment.summary,
-    afternoon_summary=data_package.afternoon_weather_assessment.summary,
 )
 output_file = "dashboard.html"
 with open(output_file, "w") as f:

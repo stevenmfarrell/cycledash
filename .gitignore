@@ -7,3 +7,4 @@ __pycache__
 *.png
 data_package.json
 dashboard.html
+.DS_Store

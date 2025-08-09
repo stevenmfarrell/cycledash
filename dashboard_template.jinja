@@ -14,7 +14,7 @@
         }
         body {
             margin: 0;
-            font-family: "Inter", sans-serif;
+            font-family: "Tahoma", sans-serif;
             overflow: hidden;
             height:560px
         }
@@ -47,7 +47,7 @@
     <div class="fixed-size-container bg-white grid grid-cols-2 grid-rows-[auto_1fr]">
 
         <div class="col-span-2 px-4 pt-4">
-             <h1 class="text-2xl font-bold text-left text-black mb-4">
+             <h1 class="text-5xl text-left text-black mb-4">
                 {{date_title}}
             </h1>
         </div>
@@ -58,10 +58,10 @@
                     <img src="{{morning_image_url}}" alt="Morning Weather Icon" class="rounded-md weather-icon">
                 </div>
                 <div class="flex flex-col items-center flex-grow text-white">
-                    <p class="text-3xl font-bold">{{morning_temperature}}°</p>
+                    <p class="text-6xl">{{morning_temperature}}°</p>
                     <p class="text-lg">{{morning_reason}}</p>
                 </div>
-                <h2 class="absolute bottom-2 right-2 text-base font-semibold text-white">{{morning_time}}</h2>
+                <h2 class="absolute bottom-2 right-2 text-base text-white">{{morning_time}}</h2>
             </div>
 
             <div class="flex-1 relative {{afternoon_conditions}}-bg rounded-lg flex flex-row justify-between items-center p-3">
@@ -69,10 +69,10 @@
                     <img src="{{afternoon_image_url}}" alt="Evening Weather Icon" class="rounded-md weather-icon">
                 </div>
                 <div class="flex flex-col items-center justify-center flex-grow text-white">
-                    <p class="text-3xl font-bold">{{afternoon_temperature}}°F</p>
+                    <p class="text-6xl">{{afternoon_temperature}}°</p>
                     <p class="text-lg">{{afternoon_reason}}</p>
                 </div>
-                <h2 class="absolute bottom-2 right-2 text-base font-semibold text-white">{{afternoon_time}}</h2>
+                <h2 class="absolute bottom-2 right-2 text-base text-white">{{afternoon_time}}</h2>
 
             </div>
         </div>

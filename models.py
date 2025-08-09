@@ -13,7 +13,7 @@ class CycleWeather(BaseModel):
     temperature_f: Optional[float] = None
     feels_like_temperature_f: Optional[float] = None
     uv_index: Optional[float] = None
-    precipitation_pct: Optional[int] = None
+    precipitation_probability: Optional[float] = None
     text: Optional[str] = None
     wind_gust_mph: Optional[float] = None
     wind_speed_mph: Optional[float] = None
@@ -28,6 +28,9 @@ class CycleAssessment(BaseModel):
     summary: str
 
 class DataPackage(BaseModel):
+    date: date
+    sunrise: datetime
+    sunset: datetime
     today_events: list[CalendarEvent]
     tomorrow_events: list[CalendarEvent]
     future_events: list[CalendarEvent]

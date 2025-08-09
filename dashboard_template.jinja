@@ -52,36 +52,37 @@
     <div class="tall-container flex flex-col {{overall_conditions}}-bg">
         <div class="flex flex-col p-6 gap-6">
         <div class="">
-             <h1 class="text-5xl font-semibold text-center text-white">
+             <h1 class="text-5xl font-semibold text-left text-white">
                 {{date_title}}
             </h1>
         </div>
-        <div class="flex flex-row gap-4">{% for forecast in forecasts %}
-            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-center items-center p-4 text-black shadow-md h-48">
+        <div class="flex flex-row gap-4">
+            {% for forecast in forecasts %}
+            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-around items-center p-4 text-black shadow-md h-64">
                 <div class="flex flex-col items-center">
                     <div class="flex flex-row items-center justify-center gap-2">
                         <div class="flex-shrink-0">
                             <img src="{{forecast.image_url}}" alt="Weather Icon" class="rounded-md weather-icon" onerror="this.onerror=null;this.src='https://placehold.co/80x80/FFFFFF/333333?text=Icon';">
                         </div>
                         <div>
-                            <p class="text-4xl font-semibold">{{forecast.temperature}}°</p>
+                            <p class="text-5xl font-semibold">{{forecast.temperature}}°</p>
                         </div>
                     </div>
-                    <div class="flex flex-row gap-4">
+                    <div class="flex flex-row gap-4 text-xl">
                         <div class="flex items-center gap-1">
-                            <img src="icons/wind.svg" class="w-5 h-5 rotate-[{{forecast.wind_rotation}}deg]">
-                            <p class="text-lg">{{forecast.wind}}</p>
+                            <img src="icons/wind.svg" class="w-6 h-6 rotate-[{{forecast.wind_rotation}}deg]">
+                            <p>{{forecast.wind}}</p>
                         </div>
                         <div class="flex items-center gap-1">
                             <img src="icons/umbrella.svg" class="w-5 h-5">
-                            <p class="text-lg">{{forecast.precip}}</p>
+                            <p>{{forecast.precip}}</p>
                         </div>
                     </div>
+                </div>
                     <div class="mt-2">
                         <p class="text-xl text-center">{{forecast.summary}}</p>
                     </div>
-                </div>
-                <h2 class="absolute top-3 left-4 text-sm font-semibold text-gray-500">{{forecast.time}}</h2>
+                <h2 class="absolute top-3 left-3 text-base font-semibold text-gray-600">{{forecast.time}}</h2>
             </div>
             {% endfor %}
         </div>

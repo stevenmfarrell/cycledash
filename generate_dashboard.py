@@ -1,4 +1,10 @@
-from models import CycleAssessment, CycleConditions, DataPackage, CycleWeather, CalendarEvent
+from models import (
+    CycleAssessment,
+    CycleConditions,
+    DataPackage,
+    CycleWeather,
+    CalendarEvent,
+)
 import jinja2
 from wmo_codes import get_wmo_weather_image
 from datetime import datetime, time
@@ -109,6 +115,7 @@ other_event_tuples = [get_tomorrow_event_tuple(event) for event in tomorrow_even
 ]
 other_event_tuples = other_event_tuples[: 10 - int(1.5 * len(today_event_tuples))]
 
+
 def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment):
     forecast = {
         "image_url": get_wmo_weather_image(weather.wmo_weather_code, True),
@@ -117,19 +124,26 @@ def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment
         "conditions": assessment.conditions,
         "wind": get_wind_text(weather),
         "wind_rotation": get_wind_rotation(weather.wind_direction_deg),
-        "precip": f"{weather.precipitation_pct}%",
+        "precip": f"{round(weather.precipitation_probability * 100)}%",
         "time": format_time_ampm(weather.time),
     }
     return forecast
 
-display_forecasts = [get_display_forecast_data(data_package.morning_weather, data_package.morning_weather_assessment),
-                     get_display_forecast_data(data_package.afternoon_weather, data_package.afternoon_weather_assessment)]
+
+display_forecasts = [
+    get_display_forecast_data(
+        data_package.morning_weather, data_package.morning_weather_assessment
+    ),
+    get_display_forecast_data(
+        data_package.afternoon_weather, data_package.afternoon_weather_assessment
+    ),
+]
 
 rendered_html = template.render(
-    date_title=data_package.morning_weather.time.strftime("%A, %b %-d"),
+    date_title=data_package.date.strftime("%A, %b %-d"),
     today_events=today_event_tuples,
     future_events=other_event_tuples,
-    forecasts = display_forecasts,
+    forecasts=display_forecasts,
     overall_conditions=combine_conditions(
         data_package.morning_weather_assessment.conditions,
         data_package.afternoon_weather_assessment.conditions,

@@ -38,7 +38,7 @@ def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
             wind_speed_mph=raw_weather['hourly']['wind_speed_10m'][i],
             uv_index=raw_weather['hourly']['uv_index'][i],
             wmo_weather_code=raw_weather['hourly']['weather_code'][i],
-            precipitation_pct=raw_weather['hourly']['precipitation_probability'][i],
+            precipitation_probability=float(raw_weather['hourly']['precipitation_probability'][i]/100),
             wind_direction_deg=raw_weather['hourly']['wind_direction_10m'][i],
         )
         weathers.append(weather)

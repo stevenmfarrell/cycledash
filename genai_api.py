@@ -25,7 +25,7 @@ def get_genai_weather_summary(weather: CycleWeather) -> CycleAssessment:
     Your task is to decide if it's good weather conditions for cycling or not, and explain why. High temperature is not a problem, but consider especially the chance of precipitation, the wind, and cold.
 
     Respond back with the cycling conditions, whether it's good conditions, bad conditions, or maybe.
-    Also respond with a short 4-6 word reason describing the weather conditions
+    Also respond with a short 2-4 word summary describing the weather conditions.
     """
     response = client.models.generate_content(
         model="gemini-2.0-flash", contents=prompt,

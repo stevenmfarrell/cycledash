@@ -21,9 +21,11 @@ class CycleWeather(BaseModel):
     wmo_weather_code: Optional[int] = None
     wind_direction_deg: Optional[float] = None
 
+CycleConditions = Literal['good', 'bad', 'maybe']
+
 class CycleAssessment(BaseModel):
-    conditions: Literal["good", "bad", "maybe"]
-    reason: str
+    conditions: CycleConditions
+    summary: str
 
 class DataPackage(BaseModel):
     today_events: list[CalendarEvent]

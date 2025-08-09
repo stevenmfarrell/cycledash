@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cycle Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         html {
             box-sizing: border-box;
@@ -14,110 +17,127 @@
         }
         body {
             margin: 0;
-            font-family: "Tahoma", sans-serif;
-            overflow: hidden;
-            height:560px
+            font-family: "Inter", sans-serif;
+            background-color: #c4d6ff;
         }
 
-        .fixed-size-container {
-            width: 800px;
-            height: 480px;
-        }
-        .section-divider:not(:last-child) {
-            border-bottom: 1px solid black;
-            padding-bottom: 0.5rem;
+        .tall-container {
+            width: 480px;
+            height: 800px;
         }
         .good-bg {
-            background-color: #3A5B46;
+            background-color: #1dad23;
         }
         .bad-bg {
-            background-color: #9C484B;
+            background-color: #ce2424;
+        }
+        .text-outline {
+        text-shadow:
+            -1px -1px 0 #000,  
+            1px -1px 0 #000,
+            -1px  1px 0 #000,
+            1px  1px 0 #000;
         }
         .maybe-bg {
-            background-color: #D0BE47;
+            background-color: #1e1eae;
         }
         .weather-icon {
-            width: 150px;
-            height: 150px;
+            width: 80px;
+            height: 80px;
         }
     </style>
 </head>
-<body class="bg-blue-100">
+<body class="flex min-h-screen">
 
-    <div class="fixed-size-container bg-white grid grid-cols-2 grid-rows-[auto_1fr]">
-
-        <div class="col-span-2 px-4 pt-4">
-             <h1 class="text-5xl text-left text-black mb-4">
+    <div class="tall-container flex flex-col {{overall_conditions}}-bg">
+        <div class="flex flex-col p-6 gap-6">
+        <div class="">
+             <h1 class="text-5xl font-semibold text-center text-white">
                 {{date_title}}
             </h1>
         </div>
-
-        <div class="flex flex-col px-4 gap-4">
-            <div class="flex-1 relative {{morning_conditions}}-bg rounded-lg flex flex-row justify-between items-center p-3">
-                <div class="flex flex-col items-start">
-                    <img src="{{morning_image_url}}" alt="Morning Weather Icon" class="rounded-md weather-icon">
+        <div class="flex flex-row gap-4">
+            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-center items-center p-4 text-black shadow-md h-48">
+                <div class="flex flex-col items-center">
+                    <div class="flex flex-row items-center justify-center gap-2">
+                        <div class="flex-shrink-0">
+                            <img src="{{morning_image_url}}" alt="Morning Weather Icon" class="rounded-md weather-icon" onerror="this.onerror=null;this.src='https://placehold.co/80x80/FFFFFF/333333?text=Icon';">
+                        </div>
+                        <div>
+                            <p class="text-4xl font-semibold">{{morning_temperature}}°</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-row gap-4">
+                        <div class="flex items-center gap-1">
+                            <img src="icons/wind.svg" class="w-5 h-5 rotate-[{{morning_wind_rotation}}deg]">
+                            <p class="text-lg">{{morning_wind}}</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <img src="icons/umbrella.svg" class="w-5 h-5">
+                            <p class="text-lg">{{morning_precip}}</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xl text-center">{{morning_summary}}</p>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center flex-grow text-white">
-                    <p class="text-6xl">{{morning_temperature}}°</p>
-                    <p class="text-lg">{{morning_reason}}</p>
-                </div>
-                <h2 class="absolute bottom-2 right-2 text-base text-white">{{morning_time}}</h2>
+                <h2 class="absolute top-3 left-4 text-sm font-semibold text-gray-500">{{morning_time}}</h2>
             </div>
 
-            <div class="flex-1 relative {{afternoon_conditions}}-bg rounded-lg flex flex-row justify-between items-center p-3">
-                 <div class="flex flex-col items-start">
-                    <img src="{{afternoon_image_url}}" alt="Evening Weather Icon" class="rounded-md weather-icon">
+            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-center items-center p-4 text-black shadow-md h-48">
+                <div class="flex flex-col items-center">
+                    <div class="flex flex-row items-center justify-center gap-2">
+                        <div class="flex-shrink-0">
+                            <img src="{{afternoon_image_url}}" alt="Evening Weather Icon" class="rounded-md weather-icon" onerror="this.onerror=null;this.src='https://placehold.co/80x80/FFFFFF/333333?text=Icon';">
+                        </div>
+                        <div>
+                            <p class="text-4xl font-semibold">{{afternoon_temperature}}°</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-row gap-4">
+                        <div class="flex items-center gap-1">
+                            <img src="icons/wind.svg" class="w-5 h-5 rotate-[{{afternoon_wind_rotation}}deg]">
+                            <p class="text-lg">{{afternoon_wind}}</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <img src="icons/umbrella.svg" class="w-5 h-5">
+                            <p class="text-lg">{{afternoon_precip}}</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xl text-center">{{afternoon_summary}}</p>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center justify-center flex-grow text-white">
-                    <p class="text-6xl">{{afternoon_temperature}}°</p>
-                    <p class="text-lg">{{afternoon_reason}}</p>
-                </div>
-                <h2 class="absolute bottom-2 right-2 text-base text-white">{{afternoon_time}}</h2>
-
+                <h2 class="absolute top-3 left-4 text-sm font-semibold text-gray-500">{{afternoon_time}}</h2>
             </div>
         </div>
 
-        <div class="flex flex-col px-4 gap-4">
-            <div class="section-divider">
-                <h3 class="text-lg font-semibold text-black mb-2">Today</h3>
-                 <div class="p-2 bg-white rounded-lg">
+        <div class="flex flex-col flex-grow justify-between gap-4">
+            <div>
+                <div class="p-4 bg-white rounded-lg shadow-md">
                     {% if not today_events %}
-                        <p class="text-gray-500 pl-6">Empty</p>
+                    <p class="text-gray-600 text-xl text-center italic">No events today</p>
                     {% endif %}
-                    <ul class="list-disc list-inside text-black text-base">
+                    <ul class="text-black text-3xl space-y-2">
                         {% for event in today_events %}
-                            <li>{{ event }}</li>
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
+                            <span class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
+                        </li>
                         {% endfor %}
                     </ul>
-                </div>
-            </div>
-
-            <div class="section-divider">
-                <h3 class="text-lg font-semibold text-black mb-2">Tomorrow</h3>
-                 <div class="p-2 bg-white rounded-lg">
-                    {% if not tomorrow_events %}
-                        <p class="text-gray-500 pl-6">Empty</p>
-                    {% endif %}
-                    <ul class="list-disc list-inside text-black text-base">
-                        {% for event in tomorrow_events %}
-                            <li>{{ event }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-
-            <div> 
-                {% if future_events %}
-                <h3 class="text-lg font-semibold text-black mb-2">Soon</h3>
-                 <div class="p-2 bg-white rounded-lg">
-                    <ul class="list-disc list-inside text-black text-base">
+                    <hr class="border-black my-4">
+                    <ul class="text-black text-xl space-y-2">
                         {% for event in future_events %}
-                            <li>{{ event }}</li>
+                        <li class="flex items-baseline">
+                            <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
+                            <span class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>
-                {% endif %}
             </div>
+        </div>
         </div>
     </div>
 </body>

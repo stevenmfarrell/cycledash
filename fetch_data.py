@@ -10,7 +10,7 @@ def main():
     today = datetime.combine(date.today(), time())
     tomorrow = today + timedelta(days=1)
     after_tomorrow = tomorrow + timedelta(days=1)
-    future = after_tomorrow + timedelta(days=7)
+    future = after_tomorrow + timedelta(days=21)
     todays_events = get_events_for_calendars(settings.calendar_ids, calendar_service, today, tomorrow)
     tomorrow_events = get_events_for_calendars(settings.calendar_ids, calendar_service, tomorrow, after_tomorrow)
     other_events = get_events_for_calendars(settings.calendar_ids, calendar_service, after_tomorrow, future)

@@ -12,4 +12,6 @@ possibly add `dtoverlay=spi0-0cs` to `/boot/firmware/config.txt`
 
 uv run html_to_png.py dashboard.html dash.png
 
-uv run image.py --file dash.png --saturation 1
+uv run image.py --file dash.png
+
+yellow #e7de23

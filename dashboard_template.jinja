@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,21 +11,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-        --weather-icon-cloud-front-color: #ffffff;
-        --weather-icon-cloud-back-color: #969696;
-        --weather-icon-sun-color: #ffa200;
-        --weather-icon-moon-color: #ffea00;
-        --weather-icon-rain-color: #1e1eae;
-        --weather-icon-snow-color: #ffffff;
-        --weather-icon-snow-stroke-color: #000000;
+            --weather-icon-cloud-front-color: #ffffff;
+            --weather-icon-cloud-back-color: #969696;
+            --weather-icon-sun-color: #ffa200;
+            --weather-icon-moon-color: #ffea00;
+            --weather-icon-rain-color: #1e1eae;
+            --weather-icon-snow-color: #ffffff;
+            --weather-icon-snow-stroke-color: #000000;
 
         }
+
         html {
             box-sizing: border-box;
         }
-        *, *:before, *:after {
+
+        *,
+        *:before,
+        *:after {
             box-sizing: inherit;
         }
+
         body {
             margin: 0;
             font-family: "Inter", sans-serif;
@@ -35,22 +41,27 @@
             width: 480px;
             height: 800px;
         }
+
         .good-bg {
             background-color: #1dad23;
         }
+
         .bad-bg {
             background-color: #ce2424;
         }
+
         .text-outline {
-        text-shadow:
-            -1px -1px 0 #000,  
-            1px -1px 0 #000,
-            -1px  1px 0 #000,
-            1px  1px 0 #000;
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
         }
+
         .maybe-bg {
             background-color: #1e1eae;
         }
+
         .weather-icon {
             width: 80px;
             height: 80px;
@@ -59,73 +70,80 @@
         }
     </style>
 </head>
+
 <body class="flex min-h-screen">
 
     <div class="tall-container flex flex-col {{overall_conditions}}-bg">
         <div class="flex flex-col p-6 gap-6">
-        <div class="">
-             <h1 class="text-5xl font-semibold text-left text-white">
-                {{date_title}}
-            </h1>
-        </div>
-        <div class="flex flex-row gap-4">
-            {% for forecast in forecasts %}
-            <div class="flex-1 bg-white rounded-xl flex flex-col p-4 text-black shadow-md h-64">
-                <h2 class="text-base text-left font-semibold text-gray-600">{{forecast.time}}</h2>
-                <div class="flex flex-col items-center">
-                    <div class="flex flex-row items-center justify-center gap-2">
-                        <div class="flex-shrink-0">
-                            {{ forecast.svg | safe }}
+            <div class="">
+                <h1 class="text-5xl font-semibold text-left text-white">
+                    {{date_title}}
+                </h1>
+            </div>
+            <div class="flex flex-row gap-4">
+                {% for forecast in forecasts %}
+                <div class="flex-1 bg-white rounded-xl flex flex-col p-4 text-black shadow-md h-64">
+                    <h2 class="text-base text-left font-semibold text-gray-600">{{forecast.time}}</h2>
+                    <div class="flex flex-col items-center">
+                        <div class="flex flex-row items-center justify-center gap-2">
+                            <div class="flex-shrink-0">
+                                {{ forecast.svg | safe }}
+                            </div>
+                            <div>
+                                <p class="text-5xl font-semibold">{{forecast.temperature}}°</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-5xl font-semibold">{{forecast.temperature}}°</p>
+                        <div class="flex flex-row gap-4 text-xl">
+                            <div class="flex items-center gap-1">
+                                <img src="icons/wind.svg" class="w-6 h-6 rotate-[{{forecast.wind_rotation}}deg]">
+                                <div class="flex items-baseline gap-1">
+                                    <p>{{forecast.wind_speed}}</p>
+                                    <p class="text-xs">mph</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <img src="icons/umbrella.svg" class="w-5 h-5">
+                                <p>{{forecast.precip}}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex flex-row gap-4 text-xl">
-                        <div class="flex items-center gap-1">
-                            <img src="icons/wind.svg" class="w-6 h-6 rotate-[{{forecast.wind_rotation}}deg]">
-                            <p>{{forecast.wind_speed}}</p><p class="text-xs">mph</p>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <img src="icons/umbrella.svg" class="w-5 h-5">
-                            <p>{{forecast.precip}}</p>
-                        </div>
-                    </div>
-                </div>
                     <div class="flex flex-grow items-center justify-center">
                         <p class="text-xl text-center">{{forecast.summary}}</p>
                     </div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <div class="flex flex-col flex-grow justify-between gap-4">
-            <div>
-                <div class="p-4 bg-white rounded-lg shadow-md">
-                    {% if not today_events %}
-                    <p class="text-gray-600 text-xl text-center italic">No events today</p>
-                    {% endif %}
-                    <ul class="text-black text-3xl space-y-2">
-                        {% for event in today_events %}
-                        <li class="flex items-baseline">
-                            <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
-                            <span class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    <hr class="border-black my-4">
-                    <ul class="text-black text-xl space-y-2">
-                        {% for event in future_events %}
-                        <li class="flex items-baseline">
-                            <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
-                            <span class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
+            <div class="flex flex-col flex-grow justify-between gap-4">
+                <div>
+                    <div class="p-4 bg-white rounded-lg shadow-md">
+                        {% if not today_events %}
+                        <p class="text-gray-600 text-xl text-center italic">No events today</p>
+                        {% endif %}
+                        <ul class="text-black text-3xl space-y-2">
+                            {% for event in today_events %}
+                            <li class="flex items-baseline">
+                                <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
+                                <span
+                                    class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <hr class="border-black my-4">
+                        <ul class="text-black text-xl space-y-2">
+                            {% for event in future_events %}
+                            <li class="flex items-baseline">
+                                <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
+                                <span
+                                    class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
     </div>
 </body>
+
 </html>

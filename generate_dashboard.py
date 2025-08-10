@@ -69,9 +69,9 @@ def get_tomorrow_event_tuple(event: CalendarEvent) -> tuple[str, str]:
 
 def get_future_event_tuple(event: CalendarEvent) -> tuple[str, str]:
     if event.is_all_day:
-        return (event.start_datetime.strftime("%b %-d"), f"{event.title}")
+        return (event.start_datetime.strftime("%a, %b %-d"), f"{event.title}")
     return (
-        event.start_datetime.strftime("%b %-d"),
+        event.start_datetime.strftime("%a, %b %-d"),
         f"{event.title} - {format_time_ampm(event.start_datetime)}",
     )
 

@@ -10,13 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-        --weather-icon-cloud-front-color: #f9f9f9;
-        --weather-icon-cloud-back-color: #7a7a7a;
+        --weather-icon-cloud-front-color: #ffffff;
+        --weather-icon-cloud-back-color: #969696;
         --weather-icon-sun-color: #ffa200;
         --weather-icon-moon-color: #ffea00;
         --weather-icon-rain-color: #1e1eae;
-        --weather-icon-snow-color: #f9f9f9;
-        --weather-icon-snow-stroke-color: #7a7a7a;
+        --weather-icon-snow-color: #ffffff;
+        --weather-icon-snow-stroke-color: #000000;
 
         }
         html {
@@ -54,6 +54,8 @@
         .weather-icon {
             width: 80px;
             height: 80px;
+            stroke: #000;
+            stroke-width: 0.3px;
         }
     </style>
 </head>
@@ -68,10 +70,11 @@
         </div>
         <div class="flex flex-row gap-4">
             {% for forecast in forecasts %}
-            <div class="flex-1 relative bg-white rounded-xl flex flex-col justify-around items-center p-4 text-black shadow-md h-64">
+            <div class="flex-1 bg-white rounded-xl flex flex-col p-4 text-black shadow-md h-64">
+                <h2 class="text-base text-left font-semibold text-gray-600">{{forecast.time}}</h2>
                 <div class="flex flex-col items-center">
                     <div class="flex flex-row items-center justify-center gap-2">
-                        <div class="flex-shrink-0 w-16 h-16">
+                        <div class="flex-shrink-0">
                             {{ forecast.svg | safe }}
                         </div>
                         <div>
@@ -81,7 +84,7 @@
                     <div class="flex flex-row gap-4 text-xl">
                         <div class="flex items-center gap-1">
                             <img src="icons/wind.svg" class="w-6 h-6 rotate-[{{forecast.wind_rotation}}deg]">
-                            <p>{{forecast.wind}}</p>
+                            <p>{{forecast.wind_speed}}</p><p class="text-xs">mph</p>
                         </div>
                         <div class="flex items-center gap-1">
                             <img src="icons/umbrella.svg" class="w-5 h-5">
@@ -89,10 +92,9 @@
                         </div>
                     </div>
                 </div>
-                    <div class="mt-2">
+                    <div class="flex flex-grow items-center justify-center">
                         <p class="text-xl text-center">{{forecast.summary}}</p>
                     </div>
-                <h2 class="absolute top-3 left-3 text-base font-semibold text-gray-600">{{forecast.time}}</h2>
             </div>
             {% endfor %}
         </div>

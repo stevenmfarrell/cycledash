@@ -7,7 +7,7 @@ from models import (
 )
 import jinja2
 from wmo_codes import get_wmo_weather_image
-from datetime import datetime, time
+from datetime import datetime, time, date, timedelta
 import pytz
 from settings import settings
 
@@ -28,7 +28,7 @@ def get_wind_rotation(degrees):
 
 
 def get_wind_text(weather: CycleWeather) -> str:
-    return f"{round(weather.wind_speed_mph)} mph"
+    return f"{round(weather.wind_speed_mph)}"
 
 
 def format_time_ampm(dt: datetime) -> str:
@@ -95,6 +95,7 @@ def combine_conditions(c1: CycleConditions, c2: CycleConditions) -> CycleConditi
         return "maybe"
     return "good"
 
+
 def get_forecast_svg(weather: CycleWeather) -> str:
     """
     Better to inline the svg so we can apply syles
@@ -102,7 +103,10 @@ def get_forecast_svg(weather: CycleWeather) -> str:
     image_path = get_wmo_weather_image(weather.wmo_weather_code, True)
     with open(image_path, "r") as f:
         svg_content = f.read()
-    return svg_content
+    modified_svg = svg_content.replace("<svg ", '<svg class="weather-icon" ', 1)
+
+    return modified_svg
+
 
 with open(data_package_file, "r") as f:
     data_package = DataPackage.model_validate_json(f.read())
@@ -124,15 +128,20 @@ other_event_tuples = [get_tomorrow_event_tuple(event) for event in tomorrow_even
 other_event_tuples = other_event_tuples[: 10 - int(1.5 * len(today_event_tuples))]
 
 
-def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment):
+def get_display_forecast_data(
+    date_context: date, weather: CycleWeather, assessment: CycleAssessment
+):
+    time_str = format_time_ampm(weather.time)
+    if weather.time.date() == date_context + timedelta(days=1):
+        time_str = f"{time_str} TOMORROW"
     forecast = {
         "temperature": round(pick_display_temperature(weather)),
         "summary": assessment.summary,
         "conditions": assessment.conditions,
-        "wind": get_wind_text(weather),
+        "wind_speed": round(weather.wind_speed_mph),
         "wind_rotation": get_wind_rotation(weather.wind_direction_deg),
         "precip": f"{round(weather.precipitation_probability * 100)}%",
-        "time": format_time_ampm(weather.time),
+        "time": time_str,
         "svg": get_forecast_svg(weather),
     }
     return forecast
@@ -140,10 +149,14 @@ def get_display_forecast_data(weather: CycleWeather, assessment: CycleAssessment
 
 display_forecasts = [
     get_display_forecast_data(
-        data_package.morning_weather, data_package.morning_weather_assessment
+        data_package.date,
+        data_package.morning_weather,
+        data_package.morning_weather_assessment,
     ),
     get_display_forecast_data(
-        data_package.afternoon_weather, data_package.afternoon_weather_assessment
+        data_package.date,
+        data_package.afternoon_weather,
+        data_package.afternoon_weather_assessment,
     ),
 ]
 

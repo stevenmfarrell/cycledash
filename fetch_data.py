@@ -3,12 +3,12 @@ from datetime import date, datetime, timedelta, time
 from weather_api import get_weather_at_times
 from settings import settings
 from models import DataPackage
-from astral import LocationInfo
-from astral.sun import sun
+from sun_api import get_sunrise_sunset
 import pytz
 import pprint
 from genai_api import get_genai_weather_summary
-def main():
+
+def run(data_package_file: str = "data_package.json",):
     today_date = date.today()
     tz = pytz.timezone(settings.timezone)
     calendar_service = get_calendar_api_service()
@@ -21,8 +21,7 @@ def main():
     other_events = get_events_for_calendars(settings.calendar_ids, calendar_service, after_tomorrow, future)
     weathers = get_weather_at_times(settings.latitude, settings.longitude, settings.timezone, [8, 17])
 
-    location = LocationInfo("My Location", "Custom", settings.timezone, settings.latitude, settings.longitude)
-    sun_times = sun(location.observer, date=today_date)
+    sun_times = get_sunrise_sunset(today_date, settings.timezone, settings.latitude, settings.longitude)
 
     for weather in weathers:
         pprint.pprint(weather.model_dump())
@@ -41,8 +40,8 @@ def main():
         print(f"- {e.title} ({e.start_datetime} to {e.end_datetime})")
     data_package = DataPackage(
         date=today_date,
-        sunrise=sun_times['sunrise'].astimezone(tz),
-        sunset=sun_times['sunset'].astimezone(tz),
+        sunrise=sun_times[0].astimezone(tz),
+        sunset=sun_times[1].astimezone(tz),
         today_events=todays_events,
         tomorrow_events=tomorrow_events,
         future_events=other_events,
@@ -51,10 +50,10 @@ def main():
         morning_weather_assessment=summaries[0],
         afternoon_weather_assessment=summaries[1]
     )
-    with open("data_package.json", "w") as f:
+    with open(data_package_file, "w") as f:
         f.write(data_package.model_dump_json(indent=2))
-        print("Data package saved to data_package.json")
+        print(f"Data package saved to {data_package_file}")
 
 
 if __name__ == "__main__":
-    main()
+    run()

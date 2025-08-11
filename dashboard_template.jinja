@@ -49,7 +49,6 @@
         .bad-bg {
             background-color: #ce2424;
         }
-
         .text-outline {
             text-shadow:
                 -1px -1px 0 #000,
@@ -122,20 +121,20 @@
                         {% endif %}
                         <ul class="text-black text-3xl space-y-2">
                             {% for event in today_events %}
-                            <li class="flex items-baseline">
-                                <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
+                            <li class="flex items-baseline {{event.class}}">
+                                <span class="w-2/5 text-right pr-4 font-semibold">{{event.time}}</span>
                                 <span
-                                    class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
+                                    class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event.title}}</span>
                             </li>
                             {% endfor %}
                         </ul>
                         <hr class="border-black my-4">
                         <ul class="text-black text-xl space-y-2">
                             {% for event in future_events %}
-                            <li class="flex items-baseline">
-                                <span class="w-2/5 text-right pr-4 font-semibold">{{event[0]}}</span>
+                            <li class="flex items-baseline {{event.class}}">
+                                <span class="w-2/5 text-right pr-4 font-semibold">{{event.time}}</span>
                                 <span
-                                    class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event[1]}}</span>
+                                    class="w-3/5 text-left block overflow-hidden whitespace-nowrap text-ellipsis">{{event.title}}</span>
                             </li>
                             {% endfor %}
                         </ul>

@@ -11,10 +11,8 @@ import jinja2
 from sun_api import is_daytime
 from wmo_codes import get_wmo_weather_image
 from datetime import datetime, time, date, timedelta
-import pytz
 from settings import settings
 import typer
-tz = pytz.timezone(settings.timezone)
 
 
 def pick_display_temperature(weather: CycleWeather) -> float:
@@ -35,17 +33,17 @@ def get_wind_text(weather: CycleWeather) -> str:
 
 def format_time_ampm(dt: datetime) -> str:
     """
-    Converts a datetime or timestamp to a string like '7 PM' or '8:30 AM'.
+    Converts a datetime or timestamp to a string like '7p' or '8:30a'.
     Accepts a datetime object or a timestamp (seconds since epoch).
     """
     hour = dt.hour
     minute = dt.minute
-    ampm = "AM" if hour < 12 else "PM"
+    ampm = "a" if hour < 12 else "p"
     hour12 = hour % 12 or 12
     if minute == 0:
-        return f"{hour12} {ampm}"
+        return f"{hour12}{ampm}"
     else:
-        return f"{hour12}:{minute:02d} {ampm}"
+        return f"{hour12}:{minute:02d}{ampm}"
 
 
 def get_detailed_event_string(event: CalendarEvent) -> str:
@@ -65,53 +63,24 @@ def get_event_class(event: CalendarEvent) -> str:
     else:
         return ""
 
-def get_today_display_event(event: CalendarEvent) -> dict[str, str]:
-    if event.is_all_day:
-        display_time = "All Day"
-    else:
-        display_time = format_time_ampm(event.start_datetime)
+def get_display_event(event: CalendarEvent, date_context: date) -> dict[str, str]:
     return {
         "title": event.title,
-        "time": display_time,
+        "is_today": event.start_datetime.date() == date_context,
+        "is_tomorrow": event.start_datetime.date() == date_context + timedelta(days=1),
+        "is_all_day": event.is_all_day,
+        "date": event.start_datetime.strftime("%b %-d"),
+        "day": get_abbreviated_day_of_week(event.start_datetime.date()),
+        "start_time": format_time_ampm(event.start_datetime),
         "class": get_event_class(event),
     }
 
-
-def get_tomorrow_display_event(event: CalendarEvent) -> dict[str, str]:
-    if event.is_all_day:
-        display_title = event.title
-    else:
-        display_title = f"{event.title} - {format_time_ampm(event.start_datetime)}"
-    return {
-        "title": display_title,
-        "time": "Tomorrow",
-        "class": get_event_class(event),
-    }
-
-
-def get_future_display_event(event: CalendarEvent) -> dict[str, str]:
-    if event.is_all_day:
-        display_title = event.title
-    else:
-        display_title = f"{event.title} - {format_time_ampm(event.start_datetime)}"
-    return {
-        "title": display_title,
-        "time": event.start_datetime.strftime("%a, %b %-d"),
-        "class": get_event_class(event),
-    }
-
-
-def sort_events(events: list[CalendarEvent]) -> list[CalendarEvent]:
+def get_abbreviated_day_of_week(date_obj: date) -> str:
     """
-    Sorts CalendarEvents: all-day events first, then by start_datetime.
+    Returns the abbreviated day of the week for a given datetime.
     """
-    return sorted(
-        events,
-        key=lambda e: e.start_datetime
-        if not e.is_all_day
-        else datetime.combine(e.start_datetime, time.min, tzinfo=tz),
-    )
-
+    CUSTOM_DAY_ABBREVIATIONS = ["M", "Tu", "W", "Th", "F", "Sa", "Su"]
+    return CUSTOM_DAY_ABBREVIATIONS[date_obj.weekday()]
 
 def combine_conditions(c1: CycleConditions, c2: CycleConditions) -> CycleConditions:
     if c1 == "bad" or c2 == "bad":
@@ -140,7 +109,7 @@ def get_display_forecast_data(
 ):
     time_str = format_time_ampm(weather.time)
     if weather.time.date() == date_context + timedelta(days=1):
-        time_str = f"{time_str} TOMORROW"
+        time_str = f"{time_str.upper()}M TOMORROW"
     forecast = {
         "temperature": round(pick_display_temperature(weather)),
         "summary": assessment.summary,
@@ -153,7 +122,6 @@ def get_display_forecast_data(
     }
     return forecast
 
-# Create a Typer application instance
 app = typer.Typer(
     help="A CLI tool to generate an HTML dashboard from a data package JSON file.",
     add_completion=False,
@@ -169,14 +137,14 @@ def run(
         dir_okay=False,
         readable=True,
         resolve_path=True,
-    )] = "data_package.json",
+    )] = settings.data_package_file,
     output_file: Annotated[Path, typer.Option(
         "--output",
         "-o",
-        help="Path for the output dashboard.html file.",
+        help="Path for the output html file.",
         writable=True,
         resolve_path=True,
-    )] = "dashboard.html",
+    )] = settings.dashboard_html_file,
     template_file: Annotated[Path, typer.Option(
         "--template",
         "-t",
@@ -185,7 +153,7 @@ def run(
         file_okay=True,
         readable=True,
         resolve_path=True,
-    )] = "dashboard_template.jinja",
+    )] = settings.dashboard_template_file,
 ):
     with open(data_package_file, "r") as f:
         data_package = DataPackage.model_validate_json(f.read())
@@ -196,15 +164,11 @@ def run(
         autoescape=jinja2.select_autoescape(["html", "xml"]),
     )
     template = env.get_template(template_file.name)
-
-    today_events = sort_events(data_package.today_events)
-    today_event_tuples = [get_today_display_event(event) for event in today_events]
-    tomorrow_events = sort_events(data_package.tomorrow_events)
-    future_events = sort_events(data_package.future_events)
-    other_event_tuples = [get_tomorrow_display_event(event) for event in tomorrow_events] + [
-        get_future_display_event(event) for event in future_events
-    ]
-    other_event_tuples = other_event_tuples[: 8 - int(1.5 * len(today_event_tuples))]
+    source_events = data_package.events
+    events = [get_display_event(event, data_package.date) for event in source_events]
+    today_events = [e for e in events if e["is_today"]]
+    other_events = [e for e in events if not e["is_today"]]
+    other_events = other_events[: max(8 - round(1.5 * max(len(today_events)-1, 0)), 0)]
 
 
     display_forecasts = [
@@ -222,8 +186,8 @@ def run(
 
     rendered_html = template.render(
         date_title=data_package.date.strftime("%A, %b %-d"),
-        today_events=today_event_tuples,
-        future_events=other_event_tuples,
+        today_events=today_events,
+        other_events=other_events,
         forecasts=display_forecasts,
         overall_conditions=combine_conditions(
             data_package.morning_weather_assessment.conditions,

@@ -1,21 +1,15 @@
-import requests
 from models import CycleWeather, CycleAssessment
-import pytz
-import datetime
-from typing import List
-import os
 from google import genai
 from google.genai import types
 
 from io import BytesIO
 from PIL import Image
 from settings import settings
-import dotenv
-dotenv.load_dotenv()
+
 api_key = settings.google_ai_api_key
 
+
 def get_genai_weather_summary(weather: CycleWeather) -> CycleAssessment:
-    api_key = os.getenv('GOOGLE_AI_API_KEY')
     client = genai.Client(api_key=api_key)
     prompt = f"""
     Consider the following weather forecast, as a JSON string:

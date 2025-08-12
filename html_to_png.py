@@ -4,7 +4,7 @@ from PIL import Image
 import os
 import typer
 from typing_extensions import Annotated
-
+from settings import settings
 app = typer.Typer(
     help="A tool to capture a webpage screenshot using Chromium and crop it to a specific size."
 )
@@ -23,7 +23,7 @@ def run(
     )],
     output_file: Annotated[str, typer.Argument(
         help="The path for the final, cropped output image."
-    )] = "dash.png",
+    )] = settings.image_file,
 ):
     """
     Executes the Chromium command to take a screenshot and then crops the result.

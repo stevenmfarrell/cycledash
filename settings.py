@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
-
+from pydantic import computed_field
+from zoneinfo import ZoneInfo
 class ProjectSettings(BaseSettings):
     """
     Settings for the calendar API.
@@ -11,6 +12,10 @@ class ProjectSettings(BaseSettings):
     morning_commute_hour: int = 8
     afternoon_commute_hour: int = 17
     timezone: str = "America/Denver"
+    @computed_field
+    @property
+    def zoneinfo(self) -> ZoneInfo:
+        return ZoneInfo(self.timezone)
     latitude: float = 0.0
     longitude: float = 0.0
     image_file: str = "dash.png"

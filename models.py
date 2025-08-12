@@ -4,8 +4,8 @@ from datetime import date, datetime
 
 class CalendarEvent(BaseModel):
     title: str
-    start_datetime: date | datetime
-    end_datetime: date | datetime
+    start_datetime: datetime
+    end_datetime: datetime
     is_all_day: bool = False
 
 class CycleWeather(BaseModel):
@@ -31,9 +31,7 @@ class DataPackage(BaseModel):
     date: date
     sunrise: datetime
     sunset: datetime
-    today_events: list[CalendarEvent]
-    tomorrow_events: list[CalendarEvent]
-    future_events: list[CalendarEvent]
+    events: list[CalendarEvent]
     morning_weather: CycleWeather
     afternoon_weather: CycleWeather
     morning_weather_assessment: CycleAssessment

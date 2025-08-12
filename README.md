@@ -6,14 +6,6 @@ Inky setup instructions from https://github.com/pimoroni/inky
 
 possibly add `dtoverlay=spi0-0cs` to `/boot/firmware/config.txt`
 
-
-```chromium-browser dashboard.html --headless --screenshot=dash.png --window-size="800,480" --disable-gpu --no-sandbox --virtual-time-budget=5000```
-
-
-uv run html_to_png.py dashboard.html dash.png
-
-uv run image.py --file dash.png
-
 yellow #e7de23
 
 Run the full pipeline, including writing to the display with

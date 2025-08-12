@@ -5,7 +5,6 @@ from google.oauth2 import service_account
 from datetime import datetime, timedelta
 from settings import settings
 
-
 def get_calendar_api_service():
     """Authenticates using a service account key file."""
     creds = service_account.Credentials.from_service_account_file(
@@ -30,8 +29,8 @@ def parse_event_to_calendar_event(event: dict) -> CalendarEvent:
         e = CalendarEvent.model_validate(
             {
                 "title": event["summary"],
-                "start_datetime": event["start"].get("date"),
-                "end_datetime": event["end"].get("date"),
+                "start_datetime": datetime.strptime(event["start"].get("date"), "%Y-%m-%d").astimezone(settings.zoneinfo),
+                "end_datetime": datetime.strptime(event["end"].get("date"), "%Y-%m-%d").astimezone(settings.zoneinfo),
                 "is_all_day": True,
             }
         )
@@ -72,6 +71,7 @@ def get_events_for_calendars(calendars: list[str], service, start_time: dt.datet
         events = get_events_for_calendar(
             calendar_id, service, start_time, end_time)
         all_events.extend(events)
+    all_events = sorted(all_events, key=lambda e: e.start_datetime)
     return all_events
 
 

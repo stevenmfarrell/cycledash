@@ -1,14 +1,11 @@
 import pprint
 import requests
 from models import CycleWeather
-import pytz
 import datetime
 from typing import List
 from settings import settings
 from wmo_codes import get_wmo_weather_description
-def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
-    tz = pytz.timezone(tz_str)
-
+def get_open_meteo_hourly_weather(lat, long) -> List[CycleWeather]:
     open_meteo_fields = ["precipitation_probability", "temperature", "apparent_temperature",
                        "wind_gusts_10m", "uv_index", "weather_code", "wind_direction_10m", "wind_speed_10m"
     ]
@@ -16,7 +13,7 @@ def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
         "latitude": lat,
         "longitude": long,
         "hourly": {','.join(open_meteo_fields)},
-        "timezone": tz_str,
+        "timezone": settings.timezone,
         "forecast_days": 1,
         "wind_speed_unit": "mph",
         "temperature_unit": "fahrenheit",
@@ -30,7 +27,7 @@ def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
     weathers = []
     for i in range(24):
         weather = CycleWeather(
-            time=datetime.datetime.fromtimestamp(raw_weather['hourly']['time'][i], tz=tz),
+            time=datetime.datetime.fromtimestamp(raw_weather['hourly']['time'][i], tz=settings.zoneinfo),
             feels_like_temperature_f=raw_weather['hourly']['apparent_temperature'][i],
             temperature_f=raw_weather['hourly']['temperature'][i],
             text = get_wmo_weather_description(raw_weather['hourly']['weather_code'][i], False),
@@ -45,8 +42,8 @@ def get_open_meteo_hourly_weather(lat, long, tz_str) -> List[CycleWeather]:
 
     return weathers
 
-def get_weather_at_times(lat, long, tz_str, hours: List[int]) -> List[CycleWeather]:
-    weathers = get_open_meteo_hourly_weather(lat, long, tz_str)
+def get_weather_at_times(lat, long, hours: List[int]) -> List[CycleWeather]:
+    weathers = get_open_meteo_hourly_weather(lat, long)
     cycle_forecasts = []
     hours = [8, 17] # commute times
     for weather in weathers:
@@ -59,7 +56,6 @@ def get_weather_at_times(lat, long, tz_str, hours: List[int]) -> List[CycleWeath
 
 if __name__ == "__main__":
     lat_lon = (settings.latitude, settings.longitude)
-    tz_str = settings.timezone
-    cycle_forecasts = get_weather_at_times(lat_lon[0], lat_lon[1], tz_str, [8, 17])
+    cycle_forecasts = get_weather_at_times(lat_lon[0], lat_lon[1], [8, 17])
     for forecast in cycle_forecasts:
         pprint.pprint(forecast.model_dump_json())

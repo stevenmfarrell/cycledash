@@ -5,19 +5,16 @@ import os
 import typer
 from typing_extensions import Annotated
 
-# --- Typer App Initialization ---
 app = typer.Typer(
     help="A tool to capture a webpage screenshot using Chromium and crop it to a specific size."
 )
 
-# --- Configuration Constants ---
 TEMP_SCREENSHOT_NAME = "temp_screenshot.png"
 CAPTURE_WIDTH = 480
-CAPTURE_HEIGHT = 1000  # Larger height to capture everything plus the blue bar
+CAPTURE_HEIGHT = 1000
 FINAL_WIDTH = 480
 FINAL_HEIGHT = 800
 
-# --- Main Script Logic as a CLI Command ---
 
 @app.command()
 def run(
@@ -31,12 +28,10 @@ def run(
     """
     Executes the Chromium command to take a screenshot and then crops the result.
     """
-    # 1. Check if the input file exists before doing anything.
     if not os.path.exists(html_file):
         print(f"Error: The input file '{html_file}' was not found.")
         raise typer.Exit(code=1)
 
-    # 2. Construct the shell command to take the screenshot.
     command = [
         "chromium-browser",
         html_file,
@@ -50,7 +45,6 @@ def run(
 
     print("Step 1: Taking screenshot with Chromium...")
     try:
-        # Execute the command. check=True will raise an error if the command fails.
         subprocess.run(command, check=True, capture_output=True, text=True)
         print(f"Successfully created temporary screenshot: {TEMP_SCREENSHOT_NAME}")
     except subprocess.CalledProcessError as e:
@@ -62,13 +56,10 @@ def run(
         print("Please ensure Chromium is installed and in your system's PATH.")
         raise typer.Exit(code=1)
 
-    # 3. Crop the resulting image.
-    print(f"\nStep 2: Cropping the image to {FINAL_WIDTH}x{FINAL_HEIGHT}...")
+    print(f"Step 2: Cropping the image to {FINAL_WIDTH}x{FINAL_HEIGHT}...")
     try:
         with Image.open(TEMP_SCREENSHOT_NAME) as img:
-            # Define the crop box (left, upper, right, lower).
             crop_box = (0, 0, FINAL_WIDTH, FINAL_HEIGHT)
-            
             cropped_img = img.crop(crop_box)
             cropped_img = cropped_img.transpose(Image.Transpose.ROTATE_90)
             cropped_img.save(output_file)
@@ -81,10 +72,9 @@ def run(
         print(f"An error occurred during cropping: {e}")
         raise typer.Exit(code=1)
     finally:
-        # 4. Clean up the temporary screenshot file.
         if os.path.exists(TEMP_SCREENSHOT_NAME):
             os.remove(TEMP_SCREENSHOT_NAME)
-            print(f"\nStep 3: Cleaned up temporary file.")
+            print("Step 3: Cleaned up temporary file.")
 
 
 if __name__ == "__main__":

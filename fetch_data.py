@@ -8,7 +8,7 @@ import pytz
 import pprint
 from genai_api import get_genai_weather_summary
 
-def run(data_package_file: str = "data_package.json",):
+def run(data_package_file: str = settings.data_package_file):
     today_date = date.today()
     tz = pytz.timezone(settings.timezone)
     calendar_service = get_calendar_api_service()
@@ -27,17 +27,6 @@ def run(data_package_file: str = "data_package.json",):
         pprint.pprint(weather.model_dump())
     summaries = [get_genai_weather_summary(weather) for weather in weathers]
 
-    for summary in summaries:
-        pprint.pprint(summary.model_dump())
-    print("Today's Events:")
-    for e in todays_events:
-        print(f"- {e.title} ({e.start_datetime} to {e.end_datetime})")
-    print("\nTomorrow's Events:")
-    for e in tomorrow_events:
-        print(f"- {e.title} ({e.start_datetime} to {e.end_datetime})")
-    print("\nOther Upcoming Events:")
-    for e in other_events:
-        print(f"- {e.title} ({e.start_datetime} to {e.end_datetime})")
     data_package = DataPackage(
         date=today_date,
         sunrise=sun_times[0].astimezone(tz),

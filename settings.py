@@ -11,7 +11,10 @@ class ProjectSettings(BaseSettings):
     timezone: str = "America/Denver"
     latitude: float = 0.0
     longitude: float = 0.0
-
+    image_file: str = "dash.png"
+    data_package_file: str = "data_package.json"
+    dashboard_template_file: str = "dashboard_template.jinja"
+    dashboard_html_file: str = "dashboard.html"
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

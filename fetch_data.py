@@ -10,7 +10,7 @@ def run(data_package_file: str = settings.data_package_file):
     today_date = date.today()
     calendar_service = get_calendar_api_service()
     today = datetime.combine(today_date, time())
-    cutoff = today + timedelta(days=21)
+    cutoff = today + timedelta(days=settings.lookahead_days)
     events = get_events_for_calendars(settings.calendar_ids, calendar_service, today, cutoff, max_per_cal=8)
     commute_hours = [settings.morning_commute_hour, settings.afternoon_commute_hour]
     weathers = get_weather_at_times(settings.latitude, settings.longitude, commute_hours)

@@ -11,6 +11,7 @@ class ProjectSettings(BaseSettings):
     calendar_ids: list[str] = []
     morning_commute_hour: int = 8
     afternoon_commute_hour: int = 17
+    lookahead_days: int = 10
     timezone: str = "America/Denver"
     @computed_field
     @property

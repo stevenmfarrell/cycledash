@@ -5,7 +5,6 @@ from settings import settings
 from models import DataPackage
 from sun_api import get_sunrise_sunset
 import pytz
-import pprint
 from genai_api import get_genai_weather_summary
 
 def run(data_package_file: str = settings.data_package_file):
@@ -19,12 +18,11 @@ def run(data_package_file: str = settings.data_package_file):
     todays_events = get_events_for_calendars(settings.calendar_ids, calendar_service, today, tomorrow)
     tomorrow_events = get_events_for_calendars(settings.calendar_ids, calendar_service, tomorrow, after_tomorrow)
     other_events = get_events_for_calendars(settings.calendar_ids, calendar_service, after_tomorrow, future)
-    weathers = get_weather_at_times(settings.latitude, settings.longitude, settings.timezone, [8, 17])
+    commute_hours = [settings.morning_commute_hour, settings.afternoon_commute_hour]
+    weathers = get_weather_at_times(settings.latitude, settings.longitude, settings.timezone, commute_hours)
 
     sun_times = get_sunrise_sunset(today_date, settings.timezone, settings.latitude, settings.longitude)
 
-    for weather in weathers:
-        pprint.pprint(weather.model_dump())
     summaries = [get_genai_weather_summary(weather) for weather in weathers]
 
     data_package = DataPackage(

@@ -232,6 +232,7 @@ def run(
     )
     with open(output_file, "w") as f:
         f.write(rendered_html)
+        print(f"Dashboard HTML generated and saved to {output_file}")
 
 if __name__ == "__main__":
     app()

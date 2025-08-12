@@ -15,3 +15,13 @@ uv run html_to_png.py dashboard.html dash.png
 uv run image.py --file dash.png
 
 yellow #e7de23
+
+Run the full pipeline, including writing to the display with
+```
+uv run pipeline.py
+```
+
+To just fetch the day and render the html, without taking a snapshot and showing on the display, run
+```
+uv run pipeline.py -sd
+```

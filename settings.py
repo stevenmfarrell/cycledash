@@ -8,6 +8,8 @@ class ProjectSettings(BaseSettings):
     google_calendar_scopes: list[str] = ["https://www.googleapis.com/auth/calendar.readonly"]
     google_ai_api_key: str = ""
     calendar_ids: list[str] = []
+    morning_commute_hour: int = 8
+    afternoon_commute_hour: int = 17
     timezone: str = "America/Denver"
     latitude: float = 0.0
     longitude: float = 0.0

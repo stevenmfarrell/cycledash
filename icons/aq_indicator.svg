@@ -15,11 +15,11 @@
     </style>
   </defs>
 
-  <rect x="0" y="0" width="60" height="60" fill="#2ECC71" />
-  <rect x="60" y="0" width="60" height="60" fill="#ADFF2F" />
-  <rect x="120" y="0" width="60" height="60" fill="#F1C40F" />
-  <rect x="180" y="0" width="60" height="60" fill="#E67E22" />
-  <rect x="240" y="0" width="60" height="60" fill="#E74C3C" />
+  <rect x="0" y="0" width="60" height="60" style="fill:var(--indicator-color-1, #2ECC71)" />
+  <rect x="60" y="0" width="60" height="60" style="fill:var(--indicator-color-2, #ADFF2F)" />
+  <rect x="120" y="0" width="60" height="60" style="fill:var(--indicator-color-3, #F1C40F)" />
+  <rect x="180" y="0" width="60" height="60" style="fill:var(--windicator-color-4, #E67E22)" />
+  <rect x="240" y="0" width="60" height="60" style="fill:var(--indicator-color-5, #E74C3C)" />
   <rect class="position-1" x="25" y="5" width="8" height="50" fill="black" />
 
 </svg>

@@ -15,14 +15,17 @@ def run(data_package_file: str = settings.data_package_file):
     commute_hours = [settings.morning_commute_hour, settings.afternoon_commute_hour]
     weathers = get_weather_at_times(settings.latitude, settings.longitude, commute_hours)
 
-    sun_times = get_sunrise_sunset(today_date, settings.timezone, settings.latitude, settings.longitude)
+    sun_times_today = get_sunrise_sunset(today_date, settings.timezone, settings.latitude, settings.longitude)
+    sun_times_tomorrow = get_sunrise_sunset(today_date+timedelta(days=1), settings.timezone, settings.latitude, settings.longitude)
 
     summaries = [get_genai_weather_summary(weather) for weather in weathers]
 
     data_package = DataPackage(
         date=today_date,
-        sunrise=sun_times[0].astimezone(settings.zoneinfo),
-        sunset=sun_times[1].astimezone(settings.zoneinfo),
+        today_sunrise=sun_times_today[0].astimezone(settings.zoneinfo),
+        today_sunset=sun_times_today[1].astimezone(settings.zoneinfo),
+        tomorrow_sunrise=sun_times_tomorrow[0].astimezone(settings.zoneinfo),
+        tomorrow_sunset=sun_times_tomorrow[1].astimezone(settings.zoneinfo),
         events=events,
         morning_weather=weathers[0],
         afternoon_weather=weathers[1],

@@ -8,6 +8,8 @@ class CalendarEvent(BaseModel):
     end_datetime: datetime
     is_all_day: bool = False
 
+AirQuality = Literal['good', 'fair', 'moderate', 'poor', 'very poor']
+
 class CycleWeather(BaseModel):
     time: datetime
     temperature_f: Optional[float] = None
@@ -17,9 +19,13 @@ class CycleWeather(BaseModel):
     text: Optional[str] = None
     wind_gust_mph: Optional[float] = None
     wind_speed_mph: Optional[float] = None
-    #air_quality: Optional[float]= None
+    air_quality: Optional[AirQuality]= None
     wmo_weather_code: Optional[int] = None
     wind_direction_deg: Optional[float] = None
+
+class AirQualityForecast(BaseModel):
+    time: datetime
+    air_quality: Optional[AirQuality] = None
 
 CycleConditions = Literal['good', 'bad', 'maybe']
 
@@ -29,8 +35,10 @@ class CycleAssessment(BaseModel):
 
 class DataPackage(BaseModel):
     date: date
-    sunrise: datetime
-    sunset: datetime
+    today_sunrise: datetime
+    today_sunset: datetime
+    tomorrow_sunrise: datetime
+    tomorrow_sunset: datetime
     events: list[CalendarEvent]
     morning_weather: CycleWeather
     afternoon_weather: CycleWeather

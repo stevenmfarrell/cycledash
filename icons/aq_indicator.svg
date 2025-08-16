@@ -1,0 +1,25 @@
+<svg width="300" height="60" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- 
+    This SVG creates a simple status indicator bar with 5 color sections
+    ranging from green (good) to red (bad).
+    It now includes CSS classes to control the indicator's position.
+  -->
+  
+  <defs>
+    <style>
+      .position-1 { transform: translateX(0px); }
+      .position-2 { transform: translateX(60px); }
+      .position-3 { transform: translateX(120px); }
+      .position-4 { transform: translateX(180px); }
+      .position-5 { transform: translateX(240px); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="60" height="60" fill="#2ECC71" />
+  <rect x="60" y="0" width="60" height="60" fill="#ADFF2F" />
+  <rect x="120" y="0" width="60" height="60" fill="#F1C40F" />
+  <rect x="180" y="0" width="60" height="60" fill="#E67E22" />
+  <rect x="240" y="0" width="60" height="60" fill="#E74C3C" />
+  <rect class="position-1" x="25" y="5" width="8" height="50" fill="black" />
+
+</svg>

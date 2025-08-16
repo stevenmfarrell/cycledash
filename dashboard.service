@@ -1,0 +1,13 @@
+[Unit]
+Description=Dashboard Display Update
+Wants=time-sync.target
+After=time-sync.target
+
+[Service]
+User=pi
+Type=oneshot
+WorkingDirectory=/home/pi/projects/cycledash
+ExecStart=/home/pi/.local/bin/uv run pipeline.py
+
+[Install]
+WantedBy=multi-user.target

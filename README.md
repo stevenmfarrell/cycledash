@@ -8,6 +8,8 @@ possibly add `dtoverlay=spi0-0cs` to `/boot/firmware/config.txt`
 
 yellow #e7de23
 
+
+## Running the project
 Run the full pipeline, including writing to the display with
 ```
 uv run pipeline.py
@@ -16,4 +18,18 @@ uv run pipeline.py
 To just fetch the day and render the html, without taking a snapshot and showing on the display, run
 ```
 uv run pipeline.py -sd
+```
+
+## Running on startup
+Create a service to run on startup
+```
+sudo cp dashboard.service /etc/systemd/system/dashboard.service
+sudo systemctl daemon-reload
+sudo systemctl enable dashboard.service
+```
+
+Useful diagnostic commands
+```
+sudo systemctl restart dashboard.service
+systemctl status dashboard.service
 ```

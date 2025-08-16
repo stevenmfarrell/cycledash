@@ -117,7 +117,7 @@ def get_display_forecast_data(
         "wind_speed": round(weather.wind_speed_mph),
         "wind_rotation": get_wind_rotation(weather.wind_direction_deg),
         "precip": f"{round(weather.precipitation_probability * 100)}%",
-        "time": time_str,
+        "time": f"{time_str.upper()}M",
         "svg": get_forecast_svg(weather),
     }
     return forecast

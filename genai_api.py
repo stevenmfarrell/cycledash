@@ -1,3 +1,4 @@
+import traceback
 from models import CycleWeather, CycleAssessment
 from google import genai
 from settings import settings
@@ -32,4 +33,5 @@ def get_genai_weather_summary(weather: CycleWeather) -> Result[CycleAssessment, 
         assessment = CycleAssessment.model_validate_json(raw_response) # type: ignore
         return Success(assessment)
     except Exception as e:
+        traceback.print_exc()
         return Failure(e)

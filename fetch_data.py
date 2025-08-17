@@ -37,6 +37,7 @@ def run(data_package_file: Path = settings.data_package_file):
                     assessment = CycleAssessment(
                         conditions="maybe", summary=weather.text
                     )
+                    assessments.append(assessment)
                     errors.append(f"Failed to fetch AI weather summary ({type(e).__name__})")
     else:
         assessments = [

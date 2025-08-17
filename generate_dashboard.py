@@ -136,7 +136,7 @@ def get_sun_event_time(date_context: date, dt: datetime, data_package: DataPacka
         sun_time = data_package.today_sunset
     else:
         sun_time = data_package.tomorrow_sunset
-    return sun_time.strftime("%-I:%M")
+    return format_time_ampm(sun_time)
 
 def get_display_forecast_data(
     date_context: date, weather: CycleWeather, assessment: CycleAssessment, data_package: DataPackage

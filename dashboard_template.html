@@ -74,6 +74,25 @@
             stroke: #000;
             stroke-width: 0.3px;
         }
+        .aq-icon {
+            stroke-width: 5px;
+            stroke: #000;
+        }
+        .aq-good {
+            fill: #1dad23;
+        }
+        .aq-fair{
+            fill: #82C623;
+        }
+        .aq-moderate{
+            fill: #e7de23;
+        }
+        .aq-poor{
+            fill: #DB8124;
+        }
+        .aq-very-poor{
+            fill: #ce2424;
+        }
     </style>
 </head>
 
@@ -99,7 +118,7 @@
                                 <p class="text-5xl font-semibold">{{forecast.temperature}}°</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-x-4 text-xl">
+                        <div class="grid grid-cols-2 gap-x-4 text-xl gap-y-1">
                             <div class="flex items-center gap-1">
                                 <img src="icons/wind.svg" class="w-6 h-6 rotate-[{{forecast.wind_rotation}}deg]">
                                 <div class="flex items-baseline gap-1">
@@ -112,7 +131,10 @@
                                 <p>{{forecast.precip}}</p>
                             </div>
                             <div class="flex items-center gap-1 h-6">
-                                {{ forecast.aq_svg | safe }}
+                                <svg class='h-6'viewbox="0 0 100 100">
+                                    <circle class="aq-icon {{forecast.aq_class}}" cx="50" cy="50" r="40" />
+                                </svg>
+                                <p class="text-lg">AQI</p>
                             </div>
                             <div class="flex items-center gap-1">
                                 <img src="{{forecast.sun_svg_path}}" class="w-6 h-6">

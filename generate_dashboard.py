@@ -105,19 +105,15 @@ def get_forecast_svg(weather: CycleWeather) -> str:
 
     return modified_svg
 
-def get_air_quality_svg(aq: AirQuality) -> str:
-    with open('icons/aq_indicator.svg', "r") as f:
-        svg_content = f.read()
+def get_air_quality_class(aq: AirQuality) -> str:
     mapping = {
-        "good": "position-1",
-        "fair": "position-2",
-        "moderate": "position-3",
-        "poor": "position-4",
-        "very poor": "position-5",
+        "good": "aq-good",
+        "fair": "aq-fair",
+        "moderate": "aq-moderate",
+        "poor": "aq-poor",
+        "very poor": "aq-very-poor",
     }
-    modified_svg = svg_content.replace('class="position-1"', f'class="{mapping[aq]}"', 1)
-
-    return modified_svg
+    return mapping[aq]
 
 def get_sun_svg_path(dt: datetime) -> str:
     """
@@ -159,7 +155,7 @@ def get_display_forecast_data(
         "svg": get_forecast_svg(weather),
         "sun_svg_path": get_sun_svg_path(weather.time),
         "sun_time": get_sun_event_time(date_context, weather.time, data_package),
-        "aq_svg": get_air_quality_svg(weather.air_quality)
+        "aq_class": get_air_quality_class(weather.air_quality)
     }
     return forecast
 

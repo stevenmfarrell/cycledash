@@ -64,7 +64,7 @@ def get_event_class(event: CalendarEvent) -> str:
     else:
         return ""
 
-def get_display_event(event: CalendarEvent, date_context: date) -> dict[str, str]:
+def get_display_event(event: CalendarEvent, date_context: date) -> dict[str, str | bool]:
     return {
         "title": event.title,
         "is_today": event.start_datetime.date() == date_context,
@@ -105,7 +105,9 @@ def get_forecast_svg(weather: CycleWeather) -> str:
 
     return modified_svg
 
-def get_air_quality_class(aq: AirQuality) -> str:
+def get_air_quality_class(aq: AirQuality | None) -> str:
+    if aq is None:
+        return "aq-missing"
     mapping = {
         "good": "aq-good",
         "fair": "aq-fair",
@@ -127,7 +129,7 @@ def get_sun_svg_path(dt: datetime) -> str:
 
 def get_sun_event_time(date_context: date, dt: datetime, data_package: DataPackage) -> str:
     if dt.date() == date_context and dt.time() < time(12, 0):
-        sun_time = data_package.today_sunrise.strftime("%-I:%M %p")
+        sun_time = data_package.today_sunrise
     elif dt.date() == date_context + timedelta(days=1) and dt.time() < time(12, 0):
         sun_time = data_package.tomorrow_sunrise
     elif dt.date() == date_context and dt.time() >= time(12, 0):
@@ -174,14 +176,14 @@ def run(
         dir_okay=False,
         readable=True,
         resolve_path=True,
-    )] = settings.data_package_file,
+    )] = Path(settings.data_package_file),
     output_file: Annotated[Path, typer.Option(
         "--output",
         "-o",
         help="Path for the output html file.",
         writable=True,
         resolve_path=True,
-    )] = settings.dashboard_html_file,
+    )] = Path(settings.dashboard_html_file),
     template_file: Annotated[Path, typer.Option(
         "--template",
         "-t",
@@ -190,7 +192,7 @@ def run(
         file_okay=True,
         readable=True,
         resolve_path=True,
-    )] = settings.dashboard_template_file,
+    )] = Path(settings.dashboard_template_file),
 ):
     with open(data_package_file, "r") as f:
         data_package = DataPackage.model_validate_json(f.read())
@@ -207,21 +209,18 @@ def run(
     other_events = [e for e in events if not e["is_today"]]
     other_events = other_events[: max(8 - round(1.5 * max(len(today_events)-1, 0)), 0)]
 
-
-    display_forecasts = [
-        get_display_forecast_data(
+    weathers = [data_package.morning_weather, data_package.afternoon_weather]
+    weathers = [w for w in weathers if w is not None]
+    assessments = [data_package.morning_weather_assessment, data_package.afternoon_weather_assessment]
+    display_forecasts = []
+    for i, weather in enumerate(weathers):
+        forecast=get_display_forecast_data(
             data_package.date,
-            data_package.morning_weather,
-            data_package.morning_weather_assessment,
+            weather,
+            assessments[i],
             data_package
-        ),
-        get_display_forecast_data(
-            data_package.date,
-            data_package.afternoon_weather,
-            data_package.afternoon_weather_assessment,
-            data_package
-        ),
-    ]
+        )
+        display_forecasts.append(forecast)
 
     rendered_html = template.render(
         date_title=data_package.date.strftime("%A, %b %-d"),
@@ -232,6 +231,7 @@ def run(
             data_package.morning_weather_assessment.conditions,
             data_package.afternoon_weather_assessment.conditions,
         ),
+        errors=data_package.errors
     )
     with open(output_file, "w") as f:
         f.write(rendered_html)

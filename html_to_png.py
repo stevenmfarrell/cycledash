@@ -1,6 +1,6 @@
 import subprocess
 from PIL import Image
-
+from pathlib import Path
 import os
 import typer
 from typing_extensions import Annotated
@@ -18,10 +18,10 @@ FINAL_HEIGHT = 800
 
 @app.command()
 def run(
-    html_file: Annotated[str, typer.Argument(
+    html_file: Annotated[Path, typer.Argument(
         help="The path to the input HTML file to capture."
     )],
-    output_file: Annotated[str, typer.Argument(
+    output_file: Annotated[Path, typer.Argument(
         help="The path for the final, cropped output image."
     )] = settings.image_file,
 ):

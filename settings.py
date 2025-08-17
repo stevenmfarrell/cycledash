@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import computed_field
 from zoneinfo import ZoneInfo
+from pathlib import Path
 class ProjectSettings(BaseSettings):
     """
     Settings for the calendar API.
@@ -20,10 +21,10 @@ class ProjectSettings(BaseSettings):
         return ZoneInfo(self.timezone)
     latitude: float = 0.0
     longitude: float = 0.0
-    image_file: str = "dash.png"
-    data_package_file: str = "data_package.json"
-    dashboard_template_file: str = "dashboard_template.html"
-    dashboard_html_file: str = "dashboard.html"
+    image_file: Path = Path("dash.png")
+    data_package_file: Path = Path("data_package.json")
+    dashboard_template_file: Path = Path("dashboard_template.html")
+    dashboard_html_file: Path = Path("dashboard.html")
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

@@ -1,7 +1,7 @@
 [Unit]
 Description=Dashboard Display Update
-Wants=time-sync.target
-After=time-sync.target
+Wants=online.target time-sync.target
+After=online.target time-sync.target
 
 [Service]
 User=pi

@@ -2,23 +2,37 @@ import subprocess
 import time
 from gpiozero import Button, LED
 from pipeline import main as run_pipeline
+import gpiod
+import gpiodevice
+from gpiod.line import Bias, Direction, Value, Edge
+from datetime import timedelta
 CANCELLATION_WINDOW_SECONDS = 10
-BUTTON_PIN_A = 5 
+LED_PIN = 13
+SW_A = 5
+SW_B = 6
+SW_C = 16  # Set this value to '25' if you're using a Impression 13.3"
+SW_D = 24
+BUTTONS = [SW_A, SW_B, SW_C, SW_D]
+LABELS = ["A", "B", "C", "D"]
+INPUT = gpiod.LineSettings(direction=Direction.INPUT, bias=Bias.PULL_UP, edge_detection=Edge.FALLING)
+chip = gpiodevice.find_chip_by_platform()
+OFFSETS = [chip.line_offset_from_id(id) for id in BUTTONS]
+line_config = dict.fromkeys(OFFSETS, INPUT)
+request = chip.request_lines(consumer="spectra6-buttons", config=line_config)
 
-LED_PIN = 6 
+
 shutdown_cancelled = False
 
-try:
-    button_a = Button(BUTTON_PIN_A)
-    led = LED(LED_PIN)
-except RuntimeError as e:
-    print(f"Error initializing hardware: {e}")
-    exit(1)
+led = chip.line_offset_from_id(LED_PIN)
+gpio = chip.request_lines(consumer="inky", config={led: gpiod.LineSettings(direction=Direction.OUTPUT, bias=Bias.DISABLED)})
 
+def led_on():
+    gpio.set_value(led, Value.ACTIVE)
 
-# --- Functions ---
-def handle_button_press():
-    """This function is called when the button is pressed. It sets the global flag."""
+def led_off():
+    gpio.set_value(led, Value.INACTIVE)
+
+def handle_button(event):
     global shutdown_cancelled
     print("Button pressed! Cancellation registered.")
     shutdown_cancelled = True
@@ -39,28 +53,19 @@ def shutdown_pi():
 
 
 if __name__ == "__main__":
-    button_a.when_pressed = handle_button_press
-
     print(f"Starting {CANCELLATION_WINDOW_SECONDS}-second cancellation window.")
+    start_time = time.time()
 
-    led.on()
+    led_on()
+    if request.wait_edge_events(timeout=timedelta(seconds=CANCELLATION_WINDOW_SECONDS)):
+        request.read_edge_events() 
+        shutdown_cancelled = True
+        print("Button pressed! Cancellation registered.")
+    led_off()
 
-    # Wait for the window duration, checking for the button press every second
-    for i in range(CANCELLATION_WINDOW_SECONDS):
-        if shutdown_cancelled:
-            led.off()
-            break
-        time.sleep(1)
-
-    # --- End of Cancellation Window ---
-    led.off()
-
-    # --- Decide What to Do Next ---
     if shutdown_cancelled:
-        # The button was pressed
         print("Shutdown cancelled. The Pi will remain on.")
     else:
-        # The button was not pressed
         print("Cancellation window closed. Proceeding with script and shutdown.")
         run_main_script()
         #shutdown_pi()

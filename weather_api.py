@@ -1,11 +1,14 @@
 import pprint
 import requests
+import stamina
 from models import AirQuality, AppResult, CycleWeather, AirQualityForecast
 import datetime
 from settings import settings
 from wmo_codes import get_wmo_weather_description
 from returns.result import Result, Success, Failure
 import traceback
+
+
 def get_open_meteo_hourly_weather(lat, long) -> Result[list[CycleWeather], Exception]:
     open_meteo_fields = [
         "precipitation_probability",
@@ -30,7 +33,9 @@ def get_open_meteo_hourly_weather(lat, long) -> Result[list[CycleWeather], Excep
         "timeformat": "unixtime",
     }
     url = "https://api.open-meteo.com/v1/forecast"
-    try:
+
+    @stamina.retry(on=Exception, attempts=3)
+    def _fetch():
         response = requests.get(url, params=query_params)
         response.raise_for_status()
         raw_weather = response.json()
@@ -40,7 +45,9 @@ def get_open_meteo_hourly_weather(lat, long) -> Result[list[CycleWeather], Excep
                 time=datetime.datetime.fromtimestamp(
                     raw_weather["hourly"]["time"][i], tz=settings.zoneinfo
                 ),
-                feels_like_temperature_f=raw_weather["hourly"]["apparent_temperature"][i],
+                feels_like_temperature_f=raw_weather["hourly"]["apparent_temperature"][
+                    i
+                ],
                 temperature_f=raw_weather["hourly"]["temperature"][i],
                 text=get_wmo_weather_description(
                     raw_weather["hourly"]["weather_code"][i], False
@@ -55,7 +62,10 @@ def get_open_meteo_hourly_weather(lat, long) -> Result[list[CycleWeather], Excep
                 wind_direction_deg=raw_weather["hourly"]["wind_direction_10m"][i],
             )
             weathers.append(weather)
-        return Success(weathers)
+        return weathers
+
+    try:
+        return Success(_fetch())
     except Exception as e:
         traceback.print_exc()
         return Failure(e)
@@ -66,10 +76,13 @@ air_quality_map: dict[int, AirQuality] = {
     2: "fair",
     3: "moderate",
     4: "poor",
-    5: "very poor"
+    5: "very poor",
 }
 
-def get_openweathermap_air_quality(lat, long) -> Result[list[AirQualityForecast], Exception]:
+
+def get_openweathermap_air_quality(
+    lat, long
+) -> Result[list[AirQualityForecast], Exception]:
     query_params = {
         "lat": lat,
         "lon": long,
@@ -77,7 +90,9 @@ def get_openweathermap_air_quality(lat, long) -> Result[list[AirQualityForecast]
         "units": "imperial",
     }
     url = "https://api.openweathermap.org/data/2.5/air_pollution/forecast"
-    try:
+
+    @stamina.retry(on=Exception, attempts=3)
+    def _fetch():
         response = requests.get(url, params=query_params)
         response.raise_for_status()
         resp = response.json()
@@ -91,10 +106,14 @@ def get_openweathermap_air_quality(lat, long) -> Result[list[AirQualityForecast]
                     air_quality=air_quality_map[item["main"]["aqi"]],
                 )
             )
-        return Success(air_quality_forecasts)
+        return air_quality_forecasts
+
+    try:
+        return Success(_fetch())
     except Exception as e:
         traceback.print_exc()
         return Failure(e)
+
 
 def _filter_weathers_for_hours(weathers: list[CycleWeather], hours: list[int]):
     filtered: list[CycleWeather] = []
@@ -106,29 +125,43 @@ def _filter_weathers_for_hours(weathers: list[CycleWeather], hours: list[int]):
             break
     return filtered
 
-def _join_aq_to_weathers(weathers: list[CycleWeather], aqs: list[AirQualityForecast]) -> list[CycleWeather]:
+
+def _join_aq_to_weathers(
+    weathers: list[CycleWeather], aqs: list[AirQualityForecast]
+) -> list[CycleWeather]:
     for forecast in weathers:
         for aq in aqs:
             if aq.time == forecast.time:
                 forecast.air_quality = aq.air_quality
     return weathers
 
-def get_weather_at_times(lat, long, hours: list[int]) -> AppResult[list[CycleWeather], str]:
+
+def get_weather_at_times(
+    lat, long, hours: list[int]
+) -> AppResult[list[CycleWeather], str]:
     weathers_result = get_open_meteo_hourly_weather(lat, long)
 
     match weathers_result:
         case Failure(e):
-            return AppResult(data=None, errors=[f"Failed to fetch weather ({type(e).__name__})"])
+            return AppResult(
+                data=None, errors=[f"Failed to fetch weather ({type(e).__name__})"]
+            )
         case Success(weathers):
             cycle_forecasts = _filter_weathers_for_hours(weathers, hours)
-            air_quality_result=get_openweathermap_air_quality(lat, long)
+            air_quality_result = get_openweathermap_air_quality(lat, long)
             match air_quality_result:
                 case Failure(e):
-                    return AppResult(data=cycle_forecasts, errors=[f"Failed to fetch air quality ({type(e).__name__})"])
+                    return AppResult(
+                        data=cycle_forecasts,
+                        errors=[f"Failed to fetch air quality ({type(e).__name__})"],
+                    )
                 case Success(air_qualities):
-                    cycle_forecasts = _join_aq_to_weathers(cycle_forecasts, air_qualities)
+                    cycle_forecasts = _join_aq_to_weathers(
+                        cycle_forecasts, air_qualities
+                    )
                     return AppResult(data=cycle_forecasts)
-    return AppResult(data=None, errors=['Unreachable code'])
+    return AppResult(data=None, errors=["Unreachable code"])
+
 
 if __name__ == "__main__":
     lat_lon = (settings.latitude, settings.longitude)

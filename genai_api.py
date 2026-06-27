@@ -1,4 +1,6 @@
 import traceback
+
+import stamina
 from models import CycleWeather, CycleAssessment
 from google import genai
 from settings import settings
@@ -22,7 +24,9 @@ def get_genai_weather_summary(
     Respond back with the cycling conditions, whether it's good conditions, bad conditions, or maybe.
     Also respond with a short 2-4 word summary describing the weather conditions.
     """
-    try:
+
+    @stamina.retry(on=Exception, attempts=1)
+    def _fetch_summary():
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
@@ -31,9 +35,11 @@ def get_genai_weather_summary(
                 "response_schema": CycleAssessment,
             },
         )
-        raw_response = response.text
+        assert response.text is not None
+        return CycleAssessment.model_validate_json(response.text)
 
-        assessment = CycleAssessment.model_validate_json(raw_response)  # type: ignore
+    try:
+        assessment = _fetch_summary()
         return Success(assessment)
     except Exception as e:
         traceback.print_exc()

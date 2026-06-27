@@ -19,5 +19,6 @@ dependencies = [
     "pydantic>=2.11.5",
     "pydantic-settings>=2.10.1",
     "returns",
+    "stamina>=26.1.0",
     "typer>=0.16.0",
 ]

@@ -6,7 +6,7 @@ from models import (
     DataPackage,
     CycleWeather,
     CalendarEvent,
-    AirQuality
+    AirQuality,
 )
 import jinja2
 from sun_api import is_daytime
@@ -55,6 +55,7 @@ def get_detailed_event_string(event: CalendarEvent) -> str:
         return f"{event.title}"
     return f"{event.title} - {format_time_ampm(event.start_datetime)}"
 
+
 def get_event_class(event: CalendarEvent) -> str:
     """
     Returns a CSS class for the event based on its type.
@@ -64,7 +65,10 @@ def get_event_class(event: CalendarEvent) -> str:
     else:
         return ""
 
-def get_display_event(event: CalendarEvent, date_context: date) -> dict[str, str | bool]:
+
+def get_display_event(
+    event: CalendarEvent, date_context: date
+) -> dict[str, str | bool]:
     return {
         "title": event.title,
         "is_today": event.start_datetime.date() == date_context,
@@ -76,12 +80,14 @@ def get_display_event(event: CalendarEvent, date_context: date) -> dict[str, str
         "class": get_event_class(event),
     }
 
+
 def get_abbreviated_day_of_week(date_obj: date) -> str:
     """
     Returns the abbreviated day of the week for a given datetime.
     """
     CUSTOM_DAY_ABBREVIATIONS = ["M", "Tu", "W", "Th", "F", "Sa", "Su"]
     return CUSTOM_DAY_ABBREVIATIONS[date_obj.weekday()]
+
 
 def combine_conditions(c1: CycleConditions, c2: CycleConditions) -> CycleConditions:
     if c1 == "bad" or c2 == "bad":
@@ -105,6 +111,7 @@ def get_forecast_svg(weather: CycleWeather) -> str:
 
     return modified_svg
 
+
 def get_air_quality_class(aq: AirQuality | None) -> str:
     if aq is None:
         return "aq-missing"
@@ -117,17 +124,21 @@ def get_air_quality_class(aq: AirQuality | None) -> str:
     }
     return mapping[aq]
 
+
 def get_sun_svg_path(dt: datetime) -> str:
     """
     Returns the SVG for the sun icon based on whether it's daytime or nighttime.
     """
     if dt.time() < time(12, 0):
-        image_path = 'icons/sunrise.svg'
+        image_path = "icons/sunrise.svg"
     else:
-        image_path = 'icons/sunset.svg'
+        image_path = "icons/sunset.svg"
     return image_path
 
-def get_sun_event_time(date_context: date, dt: datetime, data_package: DataPackage) -> str:
+
+def get_sun_event_time(
+    date_context: date, dt: datetime, data_package: DataPackage
+) -> str:
     if dt.date() == date_context and dt.time() < time(12, 0):
         sun_time = data_package.today_sunrise
     elif dt.date() == date_context + timedelta(days=1) and dt.time() < time(12, 0):
@@ -138,8 +149,12 @@ def get_sun_event_time(date_context: date, dt: datetime, data_package: DataPacka
         sun_time = data_package.tomorrow_sunset
     return format_time_ampm(sun_time)
 
+
 def get_display_forecast_data(
-    date_context: date, weather: CycleWeather, assessment: CycleAssessment, data_package: DataPackage
+    date_context: date,
+    weather: CycleWeather,
+    assessment: CycleAssessment,
+    data_package: DataPackage,
 ):
     time_str = format_time_ampm(weather.time)
     if weather.time.date() == date_context + timedelta(days=1):
@@ -157,46 +172,57 @@ def get_display_forecast_data(
         "svg": get_forecast_svg(weather),
         "sun_svg_path": get_sun_svg_path(weather.time),
         "sun_time": get_sun_event_time(date_context, weather.time, data_package),
-        "aq_class": get_air_quality_class(weather.air_quality)
+        "aq_class": get_air_quality_class(weather.air_quality),
     }
     return forecast
+
 
 app = typer.Typer(
     help="A CLI tool to generate an HTML dashboard from a data package JSON file.",
     add_completion=False,
 )
+
+
 @app.command()
 def run(
-    data_package_file: Annotated[Path, typer.Option(
-        "--input",
-        "-i",
-        help="Path to the input data_package.json file.",
-        exists=True,
-        file_okay=True,
-        dir_okay=False,
-        readable=True,
-        resolve_path=True,
-    )] = Path(settings.data_package_file),
-    output_file: Annotated[Path, typer.Option(
-        "--output",
-        "-o",
-        help="Path for the output html file.",
-        writable=True,
-        resolve_path=True,
-    )] = Path(settings.dashboard_html_file),
-    template_file: Annotated[Path, typer.Option(
-        "--template",
-        "-t",
-        help="Path to the Jinja2 template file.",
-        exists=True,
-        file_okay=True,
-        readable=True,
-        resolve_path=True,
-    )] = Path(settings.dashboard_template_file),
+    data_package_file: Annotated[
+        Path,
+        typer.Option(
+            "--input",
+            "-i",
+            help="Path to the input data_package.json file.",
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            readable=True,
+            resolve_path=True,
+        ),
+    ] = Path(settings.data_package_file),
+    output_file: Annotated[
+        Path,
+        typer.Option(
+            "--output",
+            "-o",
+            help="Path for the output html file.",
+            writable=True,
+            resolve_path=True,
+        ),
+    ] = Path(settings.dashboard_html_file),
+    template_file: Annotated[
+        Path,
+        typer.Option(
+            "--template",
+            "-t",
+            help="Path to the Jinja2 template file.",
+            exists=True,
+            file_okay=True,
+            readable=True,
+            resolve_path=True,
+        ),
+    ] = Path(settings.dashboard_template_file),
 ):
     with open(data_package_file, "r") as f:
         data_package = DataPackage.model_validate_json(f.read())
-
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(searchpath=template_file.parent),
@@ -207,23 +233,25 @@ def run(
     events = [get_display_event(event, data_package.date) for event in source_events]
     today_events = [e for e in events if e["is_today"]]
     other_events = [e for e in events if not e["is_today"]]
-    other_events = other_events[: max(8 - round(1.5 * max(len(today_events)-1, 0)), 0)]
+    other_events = other_events[
+        : max(8 - round(1.5 * max(len(today_events) - 1, 0)), 0)
+    ]
 
     weathers = [data_package.morning_weather, data_package.afternoon_weather]
     weathers = [w for w in weathers if w is not None]
-    assessments = [data_package.morning_weather_assessment, data_package.afternoon_weather_assessment]
+    assessments = [
+        data_package.morning_weather_assessment,
+        data_package.afternoon_weather_assessment,
+    ]
     display_forecasts = []
     for i, weather in enumerate(weathers):
-        forecast=get_display_forecast_data(
-            data_package.date,
-            weather,
-            assessments[i],
-            data_package
+        forecast = get_display_forecast_data(
+            data_package.date, weather, assessments[i], data_package
         )
         display_forecasts.append(forecast)
 
     rendered_html = template.render(
-        date_title=data_package.date.strftime("%A, %b %-d"),
+        date_title=data_package.date.strftime("%a, %b %-d"),
         today_events=today_events,
         other_events=other_events,
         forecasts=display_forecasts,
@@ -231,11 +259,12 @@ def run(
             data_package.morning_weather_assessment.conditions,
             data_package.afternoon_weather_assessment.conditions,
         ),
-        errors=data_package.errors
+        errors=data_package.errors,
     )
     with open(output_file, "w") as f:
         f.write(rendered_html)
         print(f"Dashboard HTML generated and saved to {output_file}")
+
 
 if __name__ == "__main__":
     app()

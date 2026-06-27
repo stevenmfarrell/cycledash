@@ -1,14 +1,19 @@
 import datetime as dt
+import stamina
 from models import AppResult, CalendarEvent
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from datetime import datetime, timedelta
 from settings import settings
 from returns.result import Result, Success, Failure
+
+
+@stamina.retry(on=Exception, attempts=3)
 def get_calendar_api_service():
     """Authenticates using a service account key file."""
     creds = service_account.Credentials.from_service_account_file(
-        settings.google_calendar_service_account_file, scopes=settings.google_calendar_scopes
+        settings.google_calendar_service_account_file,
+        scopes=settings.google_calendar_scopes,
     )
     service = build("calendar", "v3", credentials=creds)
     return service
@@ -29,8 +34,12 @@ def parse_event_to_calendar_event(event: dict) -> CalendarEvent:
         e = CalendarEvent.model_validate(
             {
                 "title": event["summary"],
-                "start_datetime": datetime.strptime(event["start"].get("date"), "%Y-%m-%d").astimezone(settings.zoneinfo),
-                "end_datetime": datetime.strptime(event["end"].get("date"), "%Y-%m-%d").astimezone(settings.zoneinfo),
+                "start_datetime": datetime.strptime(
+                    event["start"].get("date"), "%Y-%m-%d"
+                ).astimezone(settings.zoneinfo),
+                "end_datetime": datetime.strptime(
+                    event["end"].get("date"), "%Y-%m-%d"
+                ).astimezone(settings.zoneinfo),
                 "is_all_day": True,
             }
         )
@@ -46,7 +55,9 @@ def get_events_for_calendar(
 ) -> Result[list[CalendarEvent], Exception]:
     start = start_time.astimezone(dt.UTC).isoformat()
     end = end_time.astimezone(dt.UTC).isoformat()
-    try:
+
+    @stamina.retry(on=Exception, attempts=3)
+    def _fetch_events():
         events_result = (
             service.events()
             .list(
@@ -60,19 +71,29 @@ def get_events_for_calendar(
             .execute()
         )
         events = events_result.get("items", [])
-        cal_events: list[CalendarEvent] = [parse_event_to_calendar_event(e) for e in events]
+        return [parse_event_to_calendar_event(e) for e in events]
+
+    try:
+        cal_events = _fetch_events()
         return Success(cal_events)
     except Exception as e:
         return Failure(e)
 
 
-def get_events_for_calendars(calendars: list[str], service, start_time: dt.datetime, end_time: dt.datetime, max_per_cal: int = 6) -> AppResult[list[CalendarEvent], str]:
+def get_events_for_calendars(
+    calendars: list[str],
+    service,
+    start_time: dt.datetime,
+    end_time: dt.datetime,
+    max_per_cal: int = 6,
+) -> AppResult[list[CalendarEvent], str]:
     service = get_calendar_api_service()
     all_events: list[CalendarEvent] = []
     errors: list[str] = []
     for calendar_id in calendars:
         events_result = get_events_for_calendar(
-            calendar_id, service, start_time, end_time)
+            calendar_id, service, start_time, end_time
+        )
         match events_result:
             case Success(events):
                 all_events.extend(events)
@@ -84,6 +105,11 @@ def get_events_for_calendars(calendars: list[str], service, start_time: dt.datet
 
 if __name__ == "__main__":
     service = get_calendar_api_service()
-    events = get_events_for_calendars(settings.calendar_ids, service, datetime.now(), datetime.now() + timedelta(days=7))
+    events = get_events_for_calendars(
+        settings.calendar_ids,
+        service,
+        datetime.now(),
+        datetime.now() + timedelta(days=7),
+    )
     for e in events.data or []:
         print(e)

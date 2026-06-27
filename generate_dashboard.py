@@ -158,7 +158,7 @@ def get_display_forecast_data(
 ):
     time_str = format_time_ampm(weather.time)
     if weather.time.date() == date_context + timedelta(days=1):
-        time_str = f"{time_str.upper()}M TOMORROW"
+        time_str = f"{time_str.upper()}M {weather.time.strftime('%a').upper()}"
     else:
         time_str = f"{time_str.upper()}M"
     forecast = {
@@ -234,7 +234,7 @@ def run(
     today_events = [e for e in events if e["is_today"]]
     other_events = [e for e in events if not e["is_today"]]
     other_events = other_events[
-        : max(8 - round(1.5 * max(len(today_events) - 1, 0)), 0)
+        : max(7 - round(1.5 * max(len(today_events) - 1, 0)), 0)
     ]
 
     weathers = [data_package.morning_weather, data_package.afternoon_weather]

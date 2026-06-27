@@ -3,10 +3,13 @@ from models import CycleWeather, CycleAssessment
 from google import genai
 from settings import settings
 from returns.result import Result, Success, Failure
+
 api_key = settings.google_ai_api_key
 
 
-def get_genai_weather_summary(weather: CycleWeather) -> Result[CycleAssessment, Exception]:
+def get_genai_weather_summary(
+    weather: CycleWeather,
+) -> Result[CycleAssessment, Exception]:
     client = genai.Client(api_key=api_key)
     prompt = f"""
     Consider the following weather forecast, as a JSON string:
@@ -21,7 +24,7 @@ def get_genai_weather_summary(weather: CycleWeather) -> Result[CycleAssessment, 
     """
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=prompt,
             config={
                 "response_mime_type": "application/json",
@@ -30,7 +33,7 @@ def get_genai_weather_summary(weather: CycleWeather) -> Result[CycleAssessment, 
         )
         raw_response = response.text
 
-        assessment = CycleAssessment.model_validate_json(raw_response) # type: ignore
+        assessment = CycleAssessment.model_validate_json(raw_response)  # type: ignore
         return Success(assessment)
     except Exception as e:
         traceback.print_exc()

@@ -61,7 +61,7 @@ def get_event_class(event: CalendarEvent) -> str:
     Returns a CSS class for the event based on its type.
     """
     if "birthday" in event.title.lower():
-        return "text-gray-600"
+        return "opacity-75"
     else:
         return ""
 
@@ -234,7 +234,7 @@ def run(
     today_events = [e for e in events if e["is_today"]]
     other_events = [e for e in events if not e["is_today"]]
     other_events = other_events[
-        : max(7 - round(1.5 * max(len(today_events) - 1, 0)), 0)
+        : max(6 - round(1.5 * max(len(today_events) - 1, 0)), 0)
     ]
 
     weathers = [data_package.morning_weather, data_package.afternoon_weather]

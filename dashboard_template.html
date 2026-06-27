@@ -111,9 +111,7 @@
 
             <div class="flex flex-row gap-3">
                 {% for forecast in forecasts %}
-                <!-- Removed explicit height class so the card dynamically hugs its contents -->
                 <div class="flex-1 min-w-0 bg-white rounded-xl flex flex-col p-3 text-black shadow-md">
-                    <!-- Tightened line-height to reduce spacing below the time -->
                     <h2 class="text-lg leading-none text-left font-semibold text-gray-600">{{forecast.time}}</h2>
                     <div class="flex flex-col items-center mt-1">
                         <div class="flex flex-row items-center justify-center gap-1">
@@ -125,7 +123,6 @@
                             </div>
                         </div>
 
-                        <!-- Reduced gap-y-2 to gap-y-1 and mt-2 to mt-1 for a tighter grid -->
                         <div class="grid grid-cols-2 gap-x-2 text-xl gap-y-1 items-baseline mt-1">
                             <div class="flex items-center gap-1">
                                 <img src="icons/wind.svg" class="w-7 h-7 rotate-[{{forecast.wind_rotation}}deg]">
@@ -150,7 +147,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Added a small top margin to separate the summary cleanly from the grid without excessive whitespace -->
                     <div class="flex flex-grow items-center justify-center w-full mt-2">
                         <p class="text-[1.35rem] leading-tight text-center">{{forecast.summary}}</p>
                     </div>

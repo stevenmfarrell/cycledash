@@ -32,9 +32,17 @@ def run(
         print(f"Error: The input file '{html_file}' was not found.")
         raise typer.Exit(code=1)
 
+    import sys
+
+    executable = "chromium-browser"
+    if sys.platform == "darwin":
+        chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        if os.path.exists(chrome_path):
+            executable = chrome_path
+
     command = [
-        "chromium-browser",
-        html_file,
+        executable,
+        str(html_file),
         "--headless",
         f"--screenshot={TEMP_SCREENSHOT_NAME}",
         f'--window-size={CAPTURE_WIDTH},{CAPTURE_HEIGHT}',
@@ -45,12 +53,12 @@ def run(
     try:
         subprocess.run(command, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error executing Chromium command: {e}")
+        print(f"Error executing browser command: {e}")
         print(f"Stderr: {e.stderr}")
         raise typer.Exit(code=1)
     except FileNotFoundError:
-        print("Error: 'chromium-browser' command not found.")
-        print("Please ensure Chromium is installed and in your system's PATH.")
+        print(f"Error: '{executable}' command not found.")
+        print("Please ensure a Chromium-based browser is installed and in your system's PATH.")
         raise typer.Exit(code=1)
     try:
         with Image.open(TEMP_SCREENSHOT_NAME) as img:

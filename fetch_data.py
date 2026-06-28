@@ -26,24 +26,38 @@ def run(data_package_file: Path = settings.data_package_file):
     )
     errors.extend(weathers_result.errors)
 
-    assessments: list[CycleAssessment] = []
+    morning_weather = None
+    afternoon_weather = None
     if weathers_result.data is not None:
         for weather in weathers_result.data:
-            summaries_result = get_genai_weather_summary(weather)
-            match summaries_result:
-                case Success(assessment):
-                    assessments.append(assessment)
-                case Failure(e):
-                    assessment = CycleAssessment(
-                        conditions="maybe", summary=weather.text
-                    )
-                    assessments.append(assessment)
-                    errors.append(f"Failed to fetch AI weather summary ({type(e).__name__})")
+            if weather.time.hour == settings.morning_commute_hour:
+                morning_weather = weather
+            elif weather.time.hour == settings.afternoon_commute_hour:
+                afternoon_weather = weather
+
+    morning_assessment = None
+    if morning_weather is not None:
+        summaries_result = get_genai_weather_summary(morning_weather)
+        match summaries_result:
+            case Success(assessment):
+                morning_assessment = assessment
+            case Failure(e):
+                morning_assessment = CycleAssessment(conditions="maybe", summary=morning_weather.text)
+                errors.append(f"Failed to fetch AI morning weather summary ({type(e).__name__})")
     else:
-        assessments = [
-            CycleAssessment(conditions="bad", summary="No data"),
-            CycleAssessment(conditions="bad", summary="No data"),
-        ]
+        morning_assessment = CycleAssessment(conditions="bad", summary="No data")
+
+    afternoon_assessment = None
+    if afternoon_weather is not None:
+        summaries_result = get_genai_weather_summary(afternoon_weather)
+        match summaries_result:
+            case Success(assessment):
+                afternoon_assessment = assessment
+            case Failure(e):
+                afternoon_assessment = CycleAssessment(conditions="maybe", summary=afternoon_weather.text)
+                errors.append(f"Failed to fetch AI afternoon weather summary ({type(e).__name__})")
+    else:
+        afternoon_assessment = CycleAssessment(conditions="bad", summary="No data")
 
     sun_times_today = get_sunrise_sunset(
         today_date, settings.timezone, settings.latitude, settings.longitude
@@ -62,10 +76,10 @@ def run(data_package_file: Path = settings.data_package_file):
         tomorrow_sunrise=sun_times_tomorrow[0].astimezone(settings.zoneinfo),
         tomorrow_sunset=sun_times_tomorrow[1].astimezone(settings.zoneinfo),
         events=events_result.data or [],
-        morning_weather=weathers_result.data[0] if weathers_result.data else None,
-        afternoon_weather=weathers_result.data[1] if weathers_result.data else None,
-        morning_weather_assessment=assessments[0],
-        afternoon_weather_assessment=assessments[1],
+        morning_weather=morning_weather,
+        afternoon_weather=afternoon_weather,
+        morning_weather_assessment=morning_assessment,
+        afternoon_weather_assessment=afternoon_assessment,
         errors=errors
     )
     with open(data_package_file, "w") as f:

@@ -69,10 +69,16 @@ def get_event_class(event: CalendarEvent) -> str:
 def get_display_event(
     event: CalendarEvent, date_context: date
 ) -> dict[str, str | bool]:
+    start_date = event.start_datetime.date()
+    end_date = (event.end_datetime - timedelta(seconds=1)).date()
+
+    is_today = start_date <= date_context <= end_date
+    is_tomorrow = start_date <= date_context + timedelta(days=1) <= end_date
+
     return {
         "title": event.title,
-        "is_today": event.start_datetime.date() == date_context,
-        "is_tomorrow": event.start_datetime.date() == date_context + timedelta(days=1),
+        "is_today": is_today,
+        "is_tomorrow": is_tomorrow,
         "is_all_day": event.is_all_day,
         "date": event.start_datetime.strftime("%b %-d"),
         "day": get_abbreviated_day_of_week(event.start_datetime.date()),
@@ -237,24 +243,49 @@ def run(
         : max(6 - round(1.5 * max(len(today_events) - 1, 0)), 0)
     ]
 
-    weathers = [data_package.morning_weather, data_package.afternoon_weather]
-    weathers = [w for w in weathers if w is not None]
-    assessments = [
-        data_package.morning_weather_assessment,
-        data_package.afternoon_weather_assessment,
-    ]
-    display_forecasts = []
-    for i, weather in enumerate(weathers):
-        forecast = get_display_forecast_data(
-            data_package.date, weather, assessments[i], data_package
+    morning_forecast = None
+    if data_package.morning_weather is not None:
+        morning_forecast = get_display_forecast_data(
+            data_package.date,
+            data_package.morning_weather,
+            data_package.morning_weather_assessment,
+            data_package,
         )
-        display_forecasts.append(forecast)
+
+    afternoon_forecast = None
+    if data_package.afternoon_weather is not None:
+        afternoon_forecast = get_display_forecast_data(
+            data_package.date,
+            data_package.afternoon_weather,
+            data_package.afternoon_weather_assessment,
+            data_package,
+        )
+
+    # Determine chronological order of forecasts
+    ordered_forecasts = []
+    if morning_forecast and afternoon_forecast:
+        m_time = data_package.morning_weather.time
+        a_time = data_package.afternoon_weather.time
+        if m_time <= a_time:
+            ordered_forecasts = [
+                {"type": "morning", "data": morning_forecast},
+                {"type": "afternoon", "data": afternoon_forecast},
+            ]
+        else:
+            ordered_forecasts = [
+                {"type": "afternoon", "data": afternoon_forecast},
+                {"type": "morning", "data": morning_forecast},
+            ]
+    elif morning_forecast:
+        ordered_forecasts = [{"type": "morning", "data": morning_forecast}]
+    elif afternoon_forecast:
+        ordered_forecasts = [{"type": "afternoon", "data": afternoon_forecast}]
 
     rendered_html = template.render(
         date_title=data_package.date.strftime("%a, %b %-d"),
         today_events=today_events,
         other_events=other_events,
-        forecasts=display_forecasts,
+        ordered_forecasts=ordered_forecasts,
         overall_conditions=combine_conditions(
             data_package.morning_weather_assessment.conditions,
             data_package.afternoon_weather_assessment.conditions,

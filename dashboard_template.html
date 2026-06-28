@@ -116,103 +116,101 @@
 
             <div class="flex flex-col gap-3">
                 {% for f in ordered_forecasts %}
-                    {% if f.type == 'morning' %}
-                    <!-- 8AM Forecast (Deprioritized) -->
-                    {% set morning_forecast = f.data %}
-                    <div class="bg-white rounded-xl p-3 text-black shadow-md flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-3">
-                            <div class="flex flex-col pr-2 border-r border-gray-200 justify-center">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">{{morning_forecast.time}}</span>
+                {% if f.type == 'morning' %}
+                <!-- 8AM Forecast (Deprioritized) -->
+                {% set morning_forecast = f.data %}
+                <div class="bg-white rounded-xl p-3 text-black shadow-md flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col pr-2 border-r border-gray-200 justify-center">
+                            <span
+                                class="text-xs font-semibold uppercase tracking-wider text-gray-500">{{morning_forecast.time}}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="morning-forecast-svg flex-shrink-0 -my-2">
+                                {{ morning_forecast.svg | safe }}
                             </div>
-                            <div class="flex items-center gap-1.5">
-                                <div class="morning-forecast-svg flex-shrink-0 -my-2">
-                                    {{ morning_forecast.svg | safe }}
-                                </div>
-                                <span class="text-2xl font-bold tracking-tight text-gray-800 leading-none">{{morning_forecast.temperature}}°</span>
+                            <span
+                                class="text-2xl font-bold tracking-tight text-gray-800 leading-none">{{morning_forecast.temperature}}°</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3.5 text-sm text-gray-600">
+                        <!-- Wind -->
+                        <div class="flex items-center gap-0.5">
+                            <img src="icons/wind.svg" class="w-5 h-5 rotate-[{{morning_forecast.wind_rotation}}deg]">
+                            <span class="font-medium text-gray-700">{{morning_forecast.wind_speed}}</span>
+                            <span class="text-[10px] text-gray-400">mph</span>
+                        </div>
+                        <!-- Rain -->
+                        <div class="flex items-center gap-0.5">
+                            <img src="icons/umbrella.svg" class="w-5 h-5">
+                            <span class="font-medium text-gray-700">{{morning_forecast.precip}}</span>
+                        </div>
+                        <!-- AQI -->
+                        <div class="flex items-center gap-1">
+                            <img src="icons/air.svg" class="w-5 h-5">
+                            <svg class='h-4 w-4' viewbox="0 0 100 100">
+                                <circle class="aq-icon {{morning_forecast.aq_class}}" cx="50" cy="50" r="40" />
+                            </svg>
+                        </div>
+                        <!-- Sunrise -->
+                        <div class="flex items-center gap-0.5">
+                            <img src="{{morning_forecast.sun_svg_path}}" class="w-5 h-5">
+                            <span class="font-medium text-gray-700">{{morning_forecast.sun_time}}</span>
+                        </div>
+                    </div>
+                </div>
+                {% elif f.type == 'afternoon' %}
+                <!-- 5PM Forecast (Prominent) -->
+                {% set afternoon_forecast = f.data %}
+                <div class="bg-white rounded-xl p-4 text-black shadow-md flex flex-col">
+                    <div class="flex items-baseline justify-between border-b border-gray-200 pb-2">
+                        <h2 class="text-2xl font-black tracking-tight text-gray-800">{{afternoon_forecast.time}}</h2>
+                        <span class="text-xl text-gray-700 font-bold truncate max-w-[340px] text-right" title="{{afternoon_forecast.summary}}">{{afternoon_forecast.summary}}</span>
+                    </div>
+
+                    <div class="flex flex-row justify-between items-center mt-3 px-1 gap-2">
+                        <!-- Left Side: Weather Icon & Temperature -->
+                        <div class="flex items-center gap-2">
+                            <div class="flex-shrink-0 scale-110">
+                                {{ afternoon_forecast.svg | safe }}
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <span
+                                    class="{{ 'text-6xl' if (afternoon_forecast.temperature < 0 or afternoon_forecast.temperature >= 100) else 'text-7xl' }} font-extrabold tracking-tight leading-none text-gray-900">{{afternoon_forecast.temperature}}°</span>
                             </div>
                         </div>
-                        
-                        <div class="flex items-center gap-3.5 text-sm text-gray-600">
-                            <!-- Wind -->
-                            <div class="flex items-center gap-0.5">
-                                <img src="icons/wind.svg" class="w-5 h-5 rotate-[{{morning_forecast.wind_rotation}}deg]">
-                                <span class="font-medium text-gray-700">{{morning_forecast.wind_speed}}</span>
-                                <span class="text-[10px] text-gray-400">mph</span>
-                            </div>
+
+                        <!-- Right Side: 2x2 Grid for Complications -->
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xl border-l border-gray-200 pl-4 py-1">
                             <!-- Rain -->
-                            <div class="flex items-center gap-0.5">
-                                <img src="icons/umbrella.svg" class="w-5 h-5">
-                                <span class="font-medium text-gray-700">{{morning_forecast.precip}}</span>
+                            <div class="flex items-center gap-1">
+                                <img src="icons/umbrella.svg" class="w-6 h-6">
+                                <span class="font-bold text-gray-800">{{afternoon_forecast.precip}}</span>
+                            </div>
+                            <!-- Wind -->
+                            <div class="flex items-center gap-1">
+                                <img src="icons/wind.svg"
+                                    class="w-6 h-6 rotate-[{{afternoon_forecast.wind_rotation}}deg]">
+                                <span class="font-bold text-gray-800">{{afternoon_forecast.wind_speed}}</span>
+                                <span class="text-sm text-gray-500">mph</span>
                             </div>
                             <!-- AQI -->
                             <div class="flex items-center gap-1">
-                                <img src="icons/air.svg" class="w-5 h-5">
-                                <svg class='h-4 w-4' viewbox="0 0 100 100">
-                                    <circle class="aq-icon {{morning_forecast.aq_class}}" cx="50" cy="50" r="40" />
+                                <img src="icons/air.svg" class="w-6 h-6">
+                                <svg class='h-5 w-5' viewbox="0 0 100 100">
+                                    <circle class="aq-icon {{afternoon_forecast.aq_class}}" cx="50" cy="50" r="40" />
                                 </svg>
                             </div>
-                            <!-- Sunrise -->
-                            <div class="flex items-center gap-0.5">
-                                <img src="{{morning_forecast.sun_svg_path}}" class="w-5 h-5">
-                                <span class="font-medium text-gray-700">{{morning_forecast.sun_time}}</span>
+                            <!-- Sunset -->
+                            <div class="flex items-center gap-1">
+                                <img src="{{afternoon_forecast.sun_svg_path}}" class="w-6 h-6">
+                                <span class="font-bold text-gray-800">{{afternoon_forecast.sun_time}}</span>
                             </div>
                         </div>
                     </div>
-                    {% elif f.type == 'afternoon' %}
-                    <!-- 5PM Forecast (Prominent) -->
-                    {% set afternoon_forecast = f.data %}
-                    <div class="bg-white rounded-xl p-4 text-black shadow-md flex flex-col">
-                        <div class="flex items-baseline justify-between">
-                            <h2 class="text-2xl font-black tracking-tight text-gray-800">{{afternoon_forecast.time}}</h2>
-                            <span class="text-xs font-bold tracking-wider px-2.5 py-0.5 rounded-full text-white {{ 'good-bg' if afternoon_forecast.conditions == 'good' else ('bad-bg' if afternoon_forecast.conditions == 'bad' else 'maybe-bg') }}">
-                                {{ afternoon_forecast.conditions | upper }}
-                            </span>
-                        </div>
-                        
-                        <div class="flex flex-row justify-between items-center mt-3 px-1 gap-2">
-                            <!-- Left Side: Weather Icon & Temperature -->
-                            <div class="flex items-center gap-3">
-                                <div class="flex-shrink-0 scale-110">
-                                    {{ afternoon_forecast.svg | safe }}
-                                </div>
-                                <div class="flex flex-col justify-center">
-                                    <span class="text-7xl font-extrabold tracking-tight leading-none text-gray-900">{{afternoon_forecast.temperature}}°</span>
-                                </div>
-                            </div>
-
-                            <!-- Right Side: 2x2 Grid for Complications -->
-                            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-base border-l border-gray-200 pl-4 py-1">
-                                <!-- Rain -->
-                                <div class="flex items-center gap-1">
-                                    <img src="icons/umbrella.svg" class="w-6 h-6">
-                                    <span class="font-bold text-gray-800">{{afternoon_forecast.precip}}</span>
-                                </div>
-                                <!-- Wind -->
-                                <div class="flex items-center gap-1">
-                                    <img src="icons/wind.svg" class="w-6 h-6 rotate-[{{afternoon_forecast.wind_rotation}}deg]">
-                                    <span class="font-bold text-gray-800">{{afternoon_forecast.wind_speed}}</span>
-                                    <span class="text-xs text-gray-500">mph</span>
-                                </div>
-                                <!-- AQI -->
-                                <div class="flex items-center gap-1">
-                                    <img src="icons/air.svg" class="w-6 h-6">
-                                    <svg class='h-5 w-5' viewbox="0 0 100 100">
-                                        <circle class="aq-icon {{afternoon_forecast.aq_class}}" cx="50" cy="50" r="40" />
-                                    </svg>
-                                </div>
-                                <!-- Sunset -->
-                                <div class="flex items-center gap-1">
-                                    <img src="{{afternoon_forecast.sun_svg_path}}" class="w-6 h-6">
-                                    <span class="font-bold text-sm text-gray-800">{{afternoon_forecast.sun_time}}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 pt-3 border-t border-gray-200 flex items-center justify-center">
-                            <span class="text-xl text-gray-800 font-bold text-center">{{afternoon_forecast.summary}}</span>
-                        </div>
-                    </div>
-                    {% endif %}
+                </div>
+                {% endif %}
                 {% endfor %}
             </div>
 
